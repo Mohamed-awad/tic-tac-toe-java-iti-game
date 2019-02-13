@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import client.invite.Invite;
 import server.Player;
 import server.assets.Request;
 import server.assets.RequestType;
@@ -18,13 +22,17 @@ public class ClientSession extends Thread {
     ObjectOutputStream sendingStream;
     Request request;
     Boolean response;
-
+    ArrayList<String> online_players;
+    ArrayList<String> players_invite_me;
+    String source;
+    
     public ClientSession(Socket playerSocket) throws IOException {
     	response = false;
         this.serverSocket = playerSocket;
         sendingStream = new ObjectOutputStream(playerSocket.getOutputStream());
         recievingStream = new ObjectInputStream(playerSocket.getInputStream());
         start();
+        players_invite_me = new ArrayList<>();
     }
 
     public void run() {
@@ -53,12 +61,16 @@ public class ClientSession extends Thread {
         	case LOGIN_FAILED:
         		response = false;
         		break;
+        	case ONLINE_PLAYERS:
+        		hundle_online_players(request);
+        		break;
+        	case RECEIVE_INVITATION:
+        		handleInvitation(request);
+        		break;
 //            case CHAT:
 //             chatHandler(request);
 //                break;
-//            case RECEIVE_INVITATION:
-//                handleInvitation(request);
-//                break;
+//            
 //            case RECEIVE_REPLY:
 //                handleReply(request);
 //                break;
@@ -85,16 +97,43 @@ public class ClientSession extends Thread {
     }
     
     public void login(String loginName, String Pass) throws IOException {
+    	source = loginName;
         Request loginRequest = new Request(RequestType.LOGIN);
         loginRequest.setData("username", loginName);
         loginRequest.setData("pass", Pass);
         sendingStream.writeObject(loginRequest);
     }
-//    
-//    public void handleInvitation(Request request) {
-//        String source = request.getData("source");
-//        //Show it in gui
-//    }
+    
+    public void get_online_players() throws IOException
+    {
+    	Request getOnlinePlayersRequest = new Request(RequestType.ONLINE_PLAYERS);
+        sendingStream.writeObject(getOnlinePlayersRequest);
+    }
+    
+    public void hundle_online_players(Request online_request)
+    {
+    	online_players = online_request.get_online_Data("online_players");
+    }
+    public ArrayList<String> return_online_players()
+    {
+    	return online_players;
+    }
+    public void sendInvitation(String name) throws IOException
+    {
+    	Request inviteRequest = new Request(RequestType.SEND_INVITATION);
+    	inviteRequest.setData("source", source);
+    	inviteRequest.setData("destination", name);
+        sendingStream.writeObject(inviteRequest);
+    }
+    public void handleInvitation(Request request) {
+        String source = request.getData("source");
+        System.out.println(source + "   -----------");
+        players_invite_me.add(source);
+    }
+    public ArrayList<String> return_players_invite_me()
+    {
+    	return players_invite_me;
+    }
 //
 //    public void sendInvitation(String playerName) throws IOException {
 //        Request invitation = new Request(RequestType.SEND_INVITATION);
@@ -160,16 +199,6 @@ public class ClientSession extends Thread {
 //    public void endGame() throws IOException {
 //        Request endRequest = new Request(RequestType.END_GAME);
 //        sendingStream.writeObject(endRequest);
-//    }
-    
-//    public static void main(String[] args) throws IOException, InterruptedException {
-//        Socket serverSockett = new Socket("localhost", 5000);
-//        ClientSession sessionHandler = new ClientSession(serverSockett);
-//        sessionHandler.login("hesham", "123456789");
-//        Thread.sleep(10000);
-//        sessionHandler.sendReply("Hesham", "accept");
-//        sessionHandler.sendMsg("message from motaz");
-//        Thread.sleep(10000);
 //    }
 
 }

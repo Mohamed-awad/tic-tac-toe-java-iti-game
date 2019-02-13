@@ -61,15 +61,18 @@ public class ServerSession extends Thread {
         	case LOGIN:
                 loginHandler(request);
                 break;
+        	case ONLINE_PLAYERS:
+        		get_online_players();
+        		break;
+        	case SEND_INVITATION:
+              invite(request);
+              break;
 //            case CHAT:
-////              chatHandler(request);
+//                chatHandler(request);
 //                break;
 //            case SEND_MOVE:
 //                gameHandler(request);
-//                break;
-//            case SEND_INVITATION:
-//                invite(request);
-//                break;
+//                break;          
 //            case SEND_REPLY:
 //                reply(request);
 //                break;
@@ -117,7 +120,6 @@ public class ServerSession extends Thread {
 			{
 				onlinePlayer = new Player(recievingStream, sendingStream, loginRequest.getData("username"), "online");
 		        Server.onlinePlayers.add(onlinePlayer);
-		        System.out.println(Server.onlinePlayers.size());
 				Request loginSuccessRequest = new Request(RequestType.LOGIN_SUCCESS);
 				sendingStream.writeObject(loginSuccessRequest);
 			}
@@ -130,23 +132,34 @@ public class ServerSession extends Thread {
 			e.printStackTrace();
 		}
     }
-//
-//    public void invite(Request playerTwoData) { //ClientSendPlayerData //derver will handle it 
-//        String requestedPlayer = playerTwoData.getData("destination");
-//        Server.onlinePlayers.forEach(player -> {
-//            if (requestedPlayer.equals(player.playerName)) {
-//                try {
-//                    Request invitation = new Request(RequestType.RECEIVE_INVITATION);
-//                    invitation.setData("source", onlinePlayer.playerName);
-//                    player.outputStream.writeObject(invitation);
-//                } catch (IOException ex) {
-//                    Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-////               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
-////               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
-//            }
-//        });
-//    }
+    
+    public void get_online_players() throws IOException
+    {
+    	Request onlineplayers_request = new Request(RequestType.ONLINE_PLAYERS);
+    	ArrayList<String> arr = new ArrayList<>();
+    	for (int i = 0; i < Server.onlinePlayers.size(); i++) {
+			arr.add(Server.onlinePlayers.get(i).playerName);
+		}
+    	onlineplayers_request.set_online_Data("online_players", arr);
+        sendingStream.writeObject(onlineplayers_request);
+    }
+
+    public void invite(Request playerTwoData) { //ClientSendPlayerData //derver will handle it 
+        String requestedPlayer = playerTwoData.getData("destination");
+        Server.onlinePlayers.forEach(player -> {
+            if (requestedPlayer.equals(player.playerName)) {
+                try {
+                    Request invitation = new Request(RequestType.RECEIVE_INVITATION);
+                    invitation.setData("source", playerTwoData.getData("source"));
+                    player.outputStream.writeObject(invitation);
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+                }
+//               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
+//               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
+            }
+        });
+    }
 //
 //    public void reply(Request replyData) {
 //        String destinationName = replyData.getData("destination");

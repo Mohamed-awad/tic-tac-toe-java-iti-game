@@ -19,7 +19,7 @@ public enum RequestType {
 	SEND_MOVE,
 	RECEIVE_MOVE,
 	RECEIVE_MSG,
-    
+    ONLINE_PLAYERS,
 	END_GAME,
 	
 }

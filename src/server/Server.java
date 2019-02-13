@@ -20,16 +20,12 @@ public class Server {
     ServerSession connection;
     Thread stServer;
 //  public static  ArrayList<Data> playersInfo;  // array that get the data from data base it will be in thread so that it can be updated every while
-    public static ArrayList<Player> onlinePlayers;
+    public static ArrayList<Player> onlinePlayers = new ArrayList<>();
     public static ArrayList<Player> onlineBusyPlayers;
 //        SignUp signUpRequest;
 //        SignIn signInRequest;
 //        public static ArrayList<SavedMultiGames>
 //        public static ArrayList<SavedSingleGames>
-
-    public Server() throws IOException {
-        onlinePlayers = new ArrayList<>();
-    }
 
     public void startServer() {
         try {

@@ -46,14 +46,10 @@ public class Sign_up {
             public void handle(ActionEvent event) {
             	if(!(UsText.getText().equals("") || PassText.getText().equals("")))
             	{
-            		Socket serverSockett;
-            		ClientSession sessionHandler;
 					try {
-						serverSockett = new Socket("localhost", 5000);
-						sessionHandler = new ClientSession(serverSockett);
-						sessionHandler.signup(UsText.getText(), PassText.getText());
+						Re_signin_or_up.sessionHandler.signup(UsText.getText(), PassText.getText());
 						Thread.sleep(1000);
-						if(sessionHandler.return_response())
+						if(Re_signin_or_up.sessionHandler.return_response())
 						{
 							Sign_in sign_in = new Sign_in();
 							showAlert("Rigistration Successeded");

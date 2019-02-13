@@ -47,14 +47,10 @@ public class Sign_in {
             public void handle(ActionEvent event) {
             	if(!(UsText.getText().equals("") || PassText.getText().equals("")))
             	{
-		        	Socket serverSockett;
-            		ClientSession sessionHandler;
 					try {
-						serverSockett = new Socket("localhost", 5000);
-						sessionHandler = new ClientSession(serverSockett);
-		                sessionHandler.login(UsText.getText(), PassText.getText());
+						Re_signin_or_up.sessionHandler.login(UsText.getText(), PassText.getText());
 		                Thread.sleep(1000);
-						if(sessionHandler.return_response())
+						if(Re_signin_or_up.sessionHandler.return_response())
 						{
 							Single_or_Multi_Mode s_or_m = new Single_or_Multi_Mode();
 							try {

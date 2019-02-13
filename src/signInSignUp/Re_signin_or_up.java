@@ -1,5 +1,10 @@
 package signInSignUp;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import client.ClientSession;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,7 +19,15 @@ import javafx.stage.Stage;
 
 public class Re_signin_or_up extends Application {
 	public static Stage mainStage;
+	public static Socket serverSockett;
+	public static ClientSession sessionHandler;
     GridPane grid = new GridPane();
+    
+    public Re_signin_or_up() throws UnknownHostException, IOException {
+    	serverSockett = new Socket("localhost", 5000);
+		sessionHandler = new ClientSession(serverSockett);
+	}
+    
     @Override
     public void start(Stage primaryStage) throws Exception {
           Button btn_log = new Button();
