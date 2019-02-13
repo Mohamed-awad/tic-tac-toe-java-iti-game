@@ -1,0 +1,39 @@
+.root
+{
+    
+    -fx-background-image:  url("tic-tac-toe.jpg");
+    
+}
+
+#loginbtn
+{
+    -fx-background-color: linear-gradient(#eaeceb, #003a4e , #d4d02f);
+    -fx-font-size: 15pt ;
+    -fx-text-fill: white;
+    
+    
+    
+}
+#loginbtn:hover
+{
+    -fx-background-color: linear-gradient(#2A5058, #61a2b1 , yellow);
+    -fx-cursor:hand;
+}
+
+#UsText
+{
+   -fx-font-size: 15px;
+   -fx-font-family: "Arial Black";
+   -fx-fill: #818181;
+   -fx-effect: innershadow( three-pass-box , rgba(0,255,255,0.5) , 6, 0.0 , 0 , 2 );
+    
+    
+}
+#PassText
+{
+    -fx-font-size: 15px;
+   -fx-font-family: "Arial Black";
+   -fx-fill: #818181;
+   -fx-effect: innershadow( three-pass-box , rgba(0,255,255,0.5) , 6, 0.0 , 0 , 2 );
+    
+}
