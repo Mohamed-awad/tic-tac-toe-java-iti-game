@@ -20,9 +20,11 @@ import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import server.Server;
 
 public class Invite {
     
+	String currunt;
     
     public void start(Stage primaryStage) {
         
@@ -40,29 +42,33 @@ public class Invite {
         Button declineBtn = new Button("Decline");
         
         // send invitation list and accept invitation list
-        ObservableList <String> sendIvitationObservableList = FXCollections.observableArrayList("Ziyad","Ahmed","Kholaif","Ziyad","Ahmed","Kholaif","Ziyad","Ahmed","Kholaif","Ziyad","Ahmed","Kholaif","Ziyad","Ahmed","Kholaif");
+        ObservableList <String> sendIvitationObservableList = FXCollections.observableArrayList();
+        System.out.println(Server.onlinePlayers.size());
+        for (int i = 0; i < Server.onlinePlayers.size(); i++) {
+        	sendIvitationObservableList.add(Server.onlinePlayers.get(i).playerName);
+		}
         ListView <String> invitePeopleListView = new ListView<String>(sendIvitationObservableList);
         invitePeopleListView.setPrefSize(300,300);
         invitePeopleListView.setOrientation(Orientation.VERTICAL);
         MultipleSelectionModel <String> sendInvitationModule = invitePeopleListView.getSelectionModel();
-                  sendInvitationModule.selectedItemProperty().addListener(new ChangeListener<String>() {
-                    public void changed(ObservableValue<? extends String> ov, 
-                        String old_val, String new_val) {
-                        System.out.println(new_val);
-                        System.out.println(old_val);
-                    }
-                });
+        sendInvitationModule.selectedItemProperty().addListener(new ChangeListener<String>() {
+            public void changed(ObservableValue<? extends String> ov, 
+                String old_val, String new_val) {
+                currunt = new_val;
+            }
+        });
+        
         ObservableList <String> AcceptInvitationObserveList = FXCollections.observableArrayList("Esraa","Eman","Hesham");
         ListView <String> AcceptInvitationListView = new ListView<String>(AcceptInvitationObserveList);
         AcceptInvitationListView.setPrefSize(300,300);
         AcceptInvitationListView.setOrientation(Orientation.VERTICAL);
         MultipleSelectionModel <String> lvModule = AcceptInvitationListView.getSelectionModel();
-                  lvModule.selectedItemProperty().addListener(new ChangeListener<String>() {
-                    public void changed(ObservableValue<? extends String> ov, 
-                        String old_val, String new_val) {
-                        System.out.println(new_val);
-                    }
-                });
+	    lvModule.selectedItemProperty().addListener(new ChangeListener<String>() {
+	        public void changed(ObservableValue<? extends String> ov, 
+	            String old_val, String new_val) {
+	            System.out.println(new_val);
+	        }
+	    });
      
                   
                   
@@ -89,10 +95,5 @@ public class Invite {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
- //      ImageView imageChart = new ImageView(
-//      new Image(LayoutSample.class.getResourceAsStream("graphics/piechart.png")));
-//      grid.add(imageChart, 1, 2, 2, 1);
-
-    
     }
 }

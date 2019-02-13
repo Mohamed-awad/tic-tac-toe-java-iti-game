@@ -1,7 +1,11 @@
 package signInSignUp;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 
+import client.ClientSession;
 import db.DB;
 
 import javafx.event.ActionEvent;
@@ -42,19 +46,35 @@ public class Sign_up {
             public void handle(ActionEvent event) {
             	if(!(UsText.getText().equals("") || PassText.getText().equals("")))
             	{
-	            	DB dd = new DB();
-	        		try {			
-	        			dd.insert(UsText.getText(), PassText.getText(), "1", 0);
-	        			Sign_in sign_in = new Sign_in();
-	        			showAlert("Rigistration Successeded");
-	        			try {
-	        				sign_in.start(Re_signin_or_up.mainStage);
-	        			} catch (Exception e) {
-	        				e.printStackTrace();
-	        			}
-	        		} catch (SQLException e) {
-	        			e.printStackTrace();
-	        		}
+            		Socket serverSockett;
+            		ClientSession sessionHandler;
+					try {
+						serverSockett = new Socket("localhost", 5000);
+						sessionHandler = new ClientSession(serverSockett);
+						sessionHandler.signup(UsText.getText(), PassText.getText());
+						Thread.sleep(1000);
+						if(sessionHandler.return_response())
+						{
+							Sign_in sign_in = new Sign_in();
+							showAlert("Rigistration Successeded");
+							try {
+								sign_in.start(Re_signin_or_up.mainStage);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							showAlert("Rigistration Failed");
+						}
+					} catch (UnknownHostException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
             	}
             	else {
             		showAlert("Username Or PassWord can`t be empty");

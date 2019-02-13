@@ -8,7 +8,7 @@ public class Player {
 
 	ObjectInputStream inputStream;
 	ObjectOutputStream outputStream;
-	String playerName;
+	public String playerName;
 	String playerState;
 	char sign;
 

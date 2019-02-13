@@ -24,11 +24,8 @@ public class Server_Mode extends Application {
 	GridPane grid = new GridPane();
     @Override
     public void start(Stage primaryStage) throws Exception {
-    	try {
-            myServer = new Server();
-    	} catch (IOException ex) {
-            Logger.getLogger(Server_Mode.class.getName()).log(Level.SEVERE, null, ex);
-    	}
+    	  myServer = new Server();
+    	
           Button btn_log = new Button();
           btn_log.setText("Start Server");
           btn_log.setId("loginbtn");

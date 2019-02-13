@@ -48,18 +48,30 @@ public class Sign_in {
             	if(!(UsText.getText().equals("") || PassText.getText().equals("")))
             	{
 		        	Socket serverSockett;
+            		ClientSession sessionHandler;
 					try {
 						serverSockett = new Socket("localhost", 5000);
-						ClientSession sessionHandler = new ClientSession(serverSockett);
+						sessionHandler = new ClientSession(serverSockett);
 		                sessionHandler.login(UsText.getText(), PassText.getText());
-		                try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+		                Thread.sleep(1000);
+						if(sessionHandler.return_response())
+						{
+							Single_or_Multi_Mode s_or_m = new Single_or_Multi_Mode();
+							try {
+								s_or_m.start(Re_signin_or_up.mainStage);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							showAlert();
 						}
 					} catch (UnknownHostException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
             	} else {

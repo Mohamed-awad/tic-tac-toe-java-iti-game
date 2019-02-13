@@ -2,13 +2,19 @@ package server;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import db.DB;
 
 import java.io.DataOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.sql.SQLException;
+
 import server.assets.Request;
 import server.assets.RequestType;
 
@@ -48,101 +54,145 @@ public class ServerSession extends Thread {
 
     private void requestHandler(Request request) throws IOException {
         switch (request.getType()) {
-            case LOGIN:
+        
+        	case SIGNUP:
+        		signUpHandler(request);
+        		break;
+        	case LOGIN:
                 loginHandler(request);
                 break;
-            case CHAT:
-//              chatHandler(request);
-                break;
-            case SEND_MOVE:
-                gameHandler(request);
-                break;
-            case SEND_INVITATION:
-                invite(request);
-                break;
-            case SEND_REPLY:
-                reply(request);
-                break;
-            case ACCEPT_INVITATION:
-                acceptInvitation(request);
-                break;
-            case SEND_MSG:
-                chatHandler(request);
-                break;
-            case END_GAME:
-                playerTwo = null;
-
+//            case CHAT:
+////              chatHandler(request);
+//                break;
+//            case SEND_MOVE:
+//                gameHandler(request);
+//                break;
+//            case SEND_INVITATION:
+//                invite(request);
+//                break;
+//            case SEND_REPLY:
+//                reply(request);
+//                break;
+//            case ACCEPT_INVITATION:
+//                acceptInvitation(request);
+//                break;
+//            case SEND_MSG:
+//                chatHandler(request);
+//                break;
+//            case END_GAME:
+//                playerTwo = null;
+//                break;
         }
     }
-
+    
+    public void signUpHandler(Request signUpRequest) throws IOException {
+        String user_name = signUpRequest.getData("username");
+        String user_pass = signUpRequest.getData("pass");
+    	DB dd = new DB();
+		try {			
+			dd.insert(user_name, user_pass, "1", 0);
+			Request signUpSuccessRequest = new Request(RequestType.SIGN_UP_SUCCESS);
+	        sendingStream.writeObject(signUpSuccessRequest);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    }
+    
     public void loginHandler(Request loginRequest) throws IOException {
-        //Authentication 
-        onlinePlayer = new Player(recievingStream, sendingStream, loginRequest.getData("name"), "online");
-        Server.onlinePlayers.add(onlinePlayer);
+    	String user_name = loginRequest.getData("username");
+        String user_pass = loginRequest.getData("pass");
+    	DB dd = new DB();
+    	try {
+    		ArrayList<db.Player> players = dd.getAll();
+			boolean flag = false;
+			for (int i = 0; i < players.size(); i++) {
+				if(players.get(i).username.equals(user_name) &&
+					players.get(i).pass.equals(user_pass))
+				{
+					flag = true;
+					break;
+				}
+			}
+			if(flag)
+			{
+				onlinePlayer = new Player(recievingStream, sendingStream, loginRequest.getData("username"), "online");
+		        Server.onlinePlayers.add(onlinePlayer);
+		        System.out.println(Server.onlinePlayers.size());
+				Request loginSuccessRequest = new Request(RequestType.LOGIN_SUCCESS);
+				sendingStream.writeObject(loginSuccessRequest);
+			}
+			else
+			{
+				Request loginSuccessRequest = new Request(RequestType.LOGIN_FAILED);
+				sendingStream.writeObject(loginSuccessRequest);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
-
-    public void invite(Request playerTwoData) { //ClientSendPlayerData //derver will handle it 
-        String requestedPlayer = playerTwoData.getData("destination");
-        Server.onlinePlayers.forEach(player -> {
-            if (requestedPlayer.equals(player.playerName)) {
-                try {
-                    Request invitation = new Request(RequestType.RECEIVE_INVITATION);
-                    invitation.setData("source", onlinePlayer.playerName);
-                    player.outputStream.writeObject(invitation);
-                } catch (IOException ex) {
-                    Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
-                }
-//               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
-//               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
-            }
-        });
-    }
-
-    public void reply(Request replyData) {
-        String destinationName = replyData.getData("destination");
-        String replyResult = replyData.getData("reply");
-        Server.onlinePlayers.forEach(player -> {
-            if (destinationName.equals(player.playerName)) {
-                try {
-                    Request reply = new Request(RequestType.RECEIVE_REPLY);
-                    reply.setData("source", onlinePlayer.playerName);
-                    reply.setData("reply", replyResult);
-                    player.outputStream.writeObject(reply);
-                } catch (IOException ex) {
-                    Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        );
-    }
-
-    private void gameHandler(Request request) throws IOException {
-        String x = request.getData("x");
-        String y = request.getData("y");
-        Request game = new Request(RequestType.RECEIVE_MOVE);
-        game.setData("x", x);
-        game.setData("y", y);
-        playerTwo.outputStream.writeObject(game);
-    }
-
-    private void chatHandler(Request request) throws IOException {
-        System.out.println(onlinePlayer.playerName + " is sending msg to " + playerTwo.playerName );
-        String msg = request.getData("msg");
-
-        Request chatMsg = new Request(RequestType.RECEIVE_MSG);
-        chatMsg.setData("msg", msg);
-        playerTwo.outputStream.writeObject(chatMsg);
-    }
-
-    private void acceptInvitation(Request q) {
-        String playerTwoAccepted = q.getData("destination");
-        Server.onlinePlayers.forEach(player -> {
-            if (playerTwoAccepted.equals(player.playerName)) {
-                System.out.println("I am " + onlinePlayer.playerName + " and i have found " + player.playerName);
-                playerTwo = player;
-            }
-        });
-    }
+//
+//    public void invite(Request playerTwoData) { //ClientSendPlayerData //derver will handle it 
+//        String requestedPlayer = playerTwoData.getData("destination");
+//        Server.onlinePlayers.forEach(player -> {
+//            if (requestedPlayer.equals(player.playerName)) {
+//                try {
+//                    Request invitation = new Request(RequestType.RECEIVE_INVITATION);
+//                    invitation.setData("source", onlinePlayer.playerName);
+//                    player.outputStream.writeObject(invitation);
+//                } catch (IOException ex) {
+//                    Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+////               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
+////               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
+//            }
+//        });
+//    }
+//
+//    public void reply(Request replyData) {
+//        String destinationName = replyData.getData("destination");
+//        String replyResult = replyData.getData("reply");
+//        Server.onlinePlayers.forEach(player -> {
+//            if (destinationName.equals(player.playerName)) {
+//                try {
+//                    Request reply = new Request(RequestType.RECEIVE_REPLY);
+//                    reply.setData("source", onlinePlayer.playerName);
+//                    reply.setData("reply", replyResult);
+//                    player.outputStream.writeObject(reply);
+//                } catch (IOException ex) {
+//                    Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        }
+//        );
+//    }
+//
+//    private void gameHandler(Request request) throws IOException {
+//        String x = request.getData("x");
+//        String y = request.getData("y");
+//        Request game = new Request(RequestType.RECEIVE_MOVE);
+//        game.setData("x", x);
+//        game.setData("y", y);
+//        playerTwo.outputStream.writeObject(game);
+//    }
+//
+//    private void chatHandler(Request request) throws IOException {
+//        System.out.println(onlinePlayer.playerName + " is sending msg to " + playerTwo.playerName );
+//        String msg = request.getData("msg");
+//
+//        Request chatMsg = new Request(RequestType.RECEIVE_MSG);
+//        chatMsg.setData("msg", msg);
+//        playerTwo.outputStream.writeObject(chatMsg);
+//    }
+//
+//    private void acceptInvitation(Request q) {
+//        String playerTwoAccepted = q.getData("destination");
+//        Server.onlinePlayers.forEach(player -> {
+//            if (playerTwoAccepted.equals(player.playerName)) {
+//                System.out.println("I am " + onlinePlayer.playerName + " and i have found " + player.playerName);
+//                playerTwo = player;
+//            }
+//        });
+//    }
 
 }
 
