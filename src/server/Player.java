@@ -22,4 +22,7 @@ public class Player {
 	public void setSign (char c){
 		sign = c;
 	}
+        public char getSign(){
+            return sign;
+        }
 }

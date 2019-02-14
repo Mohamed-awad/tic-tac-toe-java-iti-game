@@ -21,5 +21,6 @@ public enum RequestType {
 	RECEIVE_MSG,
     ONLINE_PLAYERS,
 	END_GAME,
+        MULTI_GAME,
 	
 }
