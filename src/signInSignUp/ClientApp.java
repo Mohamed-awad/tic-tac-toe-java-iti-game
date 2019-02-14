@@ -8,6 +8,7 @@ import client.ClientSession;
 import client.TicTacGame;
 import client.invite.MultiMain;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -105,6 +106,11 @@ public class ClientApp extends Application {
     public static void changeStageSize( Window stage, int width, int height) {
     stage.setWidth(width);
     stage.setHeight(height);
+}
+    @Override
+    public void stop() throws IOException{
+    sessionHandler.endConnection();
+    Platform.exit();
 }
     
     public static void main(String[] args) {

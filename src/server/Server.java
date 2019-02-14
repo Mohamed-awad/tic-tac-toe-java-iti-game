@@ -17,7 +17,7 @@ public class Server {
     DataOutputStream outputStream;
     DataInputStream receivingRequest;
     Socket playerSocket;
-    ServerSession connection;
+    public ServerSession connection;
     Thread stServer;
 //  public static  ArrayList<Data> playersInfo;  // array that get the data from data base it will be in thread so that it can be updated every while
     public static ArrayList<Player> onlinePlayers = new ArrayList<>();
@@ -35,7 +35,7 @@ public class Server {
                 while (true) {
                     try {
                         playerSocket = gameServer.accept();
-                        new ServerSession(playerSocket);
+                        connection = new ServerSession(playerSocket);
                         System.out.println("connectionDone");
                     } catch (IOException ex) {
                         ex.printStackTrace();

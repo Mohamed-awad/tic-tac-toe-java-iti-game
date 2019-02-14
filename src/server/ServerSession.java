@@ -5,16 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import db.DB;
-
 import java.io.DataOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
-
 import server.assets.Request;
 import server.assets.RequestType;
 
@@ -29,17 +26,15 @@ public class ServerSession extends Thread {
     ObjectInputStream p2RecievingStream;
     ObjectOutputStream p2SendingStream;
     DB database;
-
     //In this constructor i create recieveing from player
     public ServerSession(Socket ps) throws IOException {
         playerSocket = ps;
         recievingStream = new ObjectInputStream(ps.getInputStream());
         sendingStream = new ObjectOutputStream(ps.getOutputStream());
         database = new DB();
-
+        setDaemon(true);
         start();
     }
-
     public void run() {
         while (true) {
             try {
@@ -50,19 +45,15 @@ public class ServerSession extends Thread {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
-
     }
-
     private void requestHandler(Request request) throws IOException {
         switch (request.getType()) {
-
             case SIGNUP:
                 signUpHandler(request);
                 break;
             case LOGIN:
-                                System.out.println("handling login");
+                System.out.println("handling login");
                 loginHandler(request);
                 break;
             case ONLINE_PLAYERS:
@@ -71,16 +62,15 @@ public class ServerSession extends Thread {
             case SEND_INVITATION:
                 invite(request);
                 break;
-            case MULTI_GAME :
+            case MULTI_GAME:
                 handleMultiRequest();
-                
                 break;
             case CHAT:
                 chatHandler(request);
                 break;
             case SEND_MOVE:
                 gameHandler(request);
-                break;          
+                break;
             case SEND_REPLY:
                 reply(request);
                 break;
@@ -90,12 +80,14 @@ public class ServerSession extends Thread {
             case SEND_MSG:
                 chatHandler(request);
                 break;
+            case END_SESSION:
+                closeConnection();
+                break;
 //            case END_GAME:
 //                playerTwo = null;
 //                break;
         }
     }
-
     public void signUpHandler(Request signUpRequest) throws IOException {
         String user_name = signUpRequest.getData("username");
         String user_pass = signUpRequest.getData("pass");
@@ -107,7 +99,6 @@ public class ServerSession extends Thread {
             e.printStackTrace();
         }
     }
-
     public void loginHandler(Request loginRequest) throws IOException {
         String user_name = loginRequest.getData("username");
         String user_pass = loginRequest.getData("pass");
@@ -136,7 +127,6 @@ public class ServerSession extends Thread {
             e.printStackTrace();
         }
     }
-
     public void get_online_players() throws IOException {
         Request onlineplayers_request = new Request(RequestType.ONLINE_PLAYERS);
         ArrayList<String> arr = new ArrayList<>();
@@ -146,7 +136,6 @@ public class ServerSession extends Thread {
         onlineplayers_request.set_online_Data("online_players", arr);
         sendingStream.writeObject(onlineplayers_request);
     }
-
     public void invite(Request playerTwoData) { //ClientSendPlayerData //derver will handle it 
         String requestedPlayer = playerTwoData.getData("destination");
         Server.onlinePlayers.forEach(player -> {
@@ -163,7 +152,6 @@ public class ServerSession extends Thread {
             }
         });
     }
-
     public void reply(Request replyData) {
         String destinationName = replyData.getData("destination");
         String replyResult = replyData.getData("reply");
@@ -181,7 +169,6 @@ public class ServerSession extends Thread {
         }
         );
     }
-
     private void gameHandler(Request request) throws IOException {
         String x = request.getData("x");
         String y = request.getData("y");
@@ -190,47 +177,47 @@ public class ServerSession extends Thread {
         game.setData("y", y);
         playerTwo.outputStream.writeObject(game);
     }
-
     private void chatHandler(Request request) throws IOException {
-        System.out.println(onlinePlayer.playerName + " is sending msg to " + playerTwo.playerName );
+        System.out.println(onlinePlayer.playerName + " is sending msg to " + playerTwo.playerName);
         String msg = request.getData("msg");
-
         Request chatMsg = new Request(RequestType.RECEIVE_MSG);
         chatMsg.setData("msg", msg);
         playerTwo.outputStream.writeObject(chatMsg);
     }
-
     private void acceptInvitation(Request q) {
         String playerTwoAccepted = q.getData("destination");
         Server.onlinePlayers.forEach(player -> {
             if (playerTwoAccepted.equals(player.playerName)) {
-                System.out.println("I am " + onlinePlayer.playerName + " and i have found " + player.playerName);
                 playerTwo = player;
             }
         });
     }
-
-    public void sendOnlinePlayers() throws IOException{
+    public void sendOnlinePlayers() throws IOException {
         request = new Request(RequestType.ONLINE_PLAYERS);
-                ArrayList<String> arr = new ArrayList<>();
+        ArrayList<String> arr = new ArrayList<>();
         for (int i = 0; i < Server.onlinePlayers.size(); i++) {
             arr.add(Server.onlinePlayers.get(i).playerName);
         }
-        System.out.println("sending requests");
         request.set_online_Data("online_players", arr);
-        for (int i = 0 ; i <Server.onlinePlayers.size();i++){
-            if(Server.onlinePlayers.get(i).getSign()=='d'){
-            Server.onlinePlayers.get(i).outputStream.writeObject(request);
-            System.out.println("sending requests to " + Server.onlinePlayers.get(i).playerName);
+        for (int i = 0; i < Server.onlinePlayers.size(); i++) {
+            if (Server.onlinePlayers.get(i).getSign() == 'd') {
+                Server.onlinePlayers.get(i).outputStream.writeObject(request);
+            }
         }
     }
-    }
-
     private void handleMultiRequest() throws IOException {
         onlinePlayer.setSign('d');
         sendOnlinePlayers();
+    }
+    private void closeConnection() throws IOException {
+        Server.onlinePlayers.remove(onlinePlayer);
+        sendOnlinePlayers();
+                playerSocket.close();
 
     }
-    
+    //Send signals to all clients
+    public void endConnection() throws IOException{
+        playerSocket.close();
+    }
     
 }

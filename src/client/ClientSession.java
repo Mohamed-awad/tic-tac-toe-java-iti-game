@@ -34,6 +34,7 @@ public class ClientSession extends Thread {
         this.serverSocket = playerSocket;
         sendingStream = new ObjectOutputStream(playerSocket.getOutputStream());
         recievingStream = new ObjectInputStream(playerSocket.getInputStream());
+        setDaemon(true);
         start();
         players_invite_me = new ArrayList<>();
     }
@@ -170,6 +171,13 @@ public class ClientSession extends Thread {
         });
         sendingStream.writeObject(r);
 
+    }
+    
+    
+    public void endConnection() throws IOException{
+        request = new Request(RequestType.END_SESSION);
+        sendingStream.writeObject(request);
+        
     }
     
     
