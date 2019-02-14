@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
-import single_tic_tac_toe.TicTacToe;
+import levels.Levels;
 
 public class ChooseGUI {
 
@@ -31,7 +31,7 @@ public class ChooseGUI {
         btn_log.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                TicTacToe tt = new TicTacToe();
+                Levels tt = new Levels();
                 try {
                     tt.start(ClientApp.mainStage);
                 } catch (Exception e) {
@@ -73,3 +73,4 @@ public class ChooseGUI {
         grid.requestFocus();
     }
 }
+
