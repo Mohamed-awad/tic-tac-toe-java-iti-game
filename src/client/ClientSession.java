@@ -78,9 +78,9 @@ public class ClientSession extends Thread {
             case RECEIVE_REPLY:
                 handleReply(request);
                 break;
-//            case RECEIVE_MOVE:
-//                handleMove(request);
-//                break;
+            case RECEIVE_MOVE:
+                handleMove(request);
+                break;
 //            case RECEIVE_MSG:
 //                handleMsg(request);
 //                break;
@@ -146,7 +146,7 @@ public class ClientSession extends Thread {
     public void sendReply(String playerName, String replyResult) throws IOException {
         Request reply = new Request(RequestType.SEND_REPLY);
         if ("accept".equals(replyResult)) {
-            acceptInvitation(playerName);
+            acceptInvitation(playerName, true, true);
         }
         reply.setData("reply", replyResult);
         reply.setData("destination", playerName);
@@ -157,17 +157,17 @@ public class ClientSession extends Thread {
         String result = request.getData("reply");
         String player = request.getData("source");
         if ("accept".equals(result)) {
-            acceptInvitation(player);
+            acceptInvitation(player, false, true);
         }
 
     }
 
-    public void acceptInvitation(String player) throws IOException {
+    public void acceptInvitation(String player, Boolean x, Boolean y) throws IOException {
         Request r = new Request(RequestType.ACCEPT_INVITATION);
         r.setData("destination", player);
         Platform.runLater(()->{
-        ClientApp.game = new TicTacGame();
-        ClientApp.game.start(ClientApp.mainStage);        
+        ClientApp.game = new TicTacGame(x, y);
+        ClientApp.game.start(ClientApp.mainStage);
         });
         sendingStream.writeObject(r);
 
@@ -180,28 +180,24 @@ public class ClientSession extends Thread {
         
     }
     
-    
-    
-    
-    
-    
-    
-//
-//    //Handling gaming
-//    public void sendMove(int x, int y) throws IOException {
-//        Request move = new Request(RequestType.SEND_MOVE);
-//        move.setData("x", Integer.toString(x));
-//        move.setData("y", Integer.toString(y));
-//        sendingStream.writeObject(move);
-//    }
-//
-//    private void handleMove(Request request) {
-//        int x = Integer.valueOf(request.getData("x"));
-//        int y = Integer.valueOf(request.getData("y"));
-//        System.out.println("x is " + x + " y is " + y);
-//        //Handle the gui
-//
-//    }
+    //Handling gaming
+    public void sendMove(int x, int y, String playable) throws IOException {
+        Request move = new Request(RequestType.SEND_MOVE);
+        move.setData("x", Integer.toString(x));
+        move.setData("y", Integer.toString(y));
+        move.setData("current_player", playable);
+        sendingStream.writeObject(move);
+    }
+
+    private void handleMove(Request request) {
+        int x = Integer.valueOf(request.getData("x"));
+        int y = Integer.valueOf(request.getData("y"));
+        String playable = request.getData("current_player");
+        Platform.runLater(()->{
+            ClientApp.game.setMove(x, y, playable);
+        });
+
+    }
 //
 //    //Handle Chat 
 //    //Handling gaming

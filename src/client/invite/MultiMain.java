@@ -109,11 +109,11 @@ public class MultiMain {
         grid.setHalignment(acceptBtn, HPos.CENTER);
         grid.setHalignment(declineBtn, HPos.CENTER);
         //setting the stage & scene
-        Scene scene = new Scene(grid);
+        Scene scene = new Scene(grid, 600, 600);
         primaryStage.setTitle("Invitation");
         primaryStage.setScene(scene);
         primaryStage.show();
-        ClientApp.changeStageSize(primaryStage, 600, 600);
+        primaryStage.setResizable(false);
     }
     public void showAlert(String mess) {
         Alert alert = new Alert(AlertType.INFORMATION, mess, ButtonType.CANCEL);

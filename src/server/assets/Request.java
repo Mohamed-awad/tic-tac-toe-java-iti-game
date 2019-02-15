@@ -10,8 +10,8 @@ import server.Player;
 public class Request implements Serializable{
 	private RequestType type;
 	public HashMap<String, String> requestData;
-	public HashMap<String, ArrayList<String>> onlineData;
-            
+	public HashMap<String, ArrayList<String>> onlineData; 
+	
     public Request(RequestType type){
         this.type = type;
         requestData = new HashMap<>();

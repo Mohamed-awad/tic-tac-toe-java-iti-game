@@ -169,14 +169,18 @@ public class ServerSession extends Thread {
         }
         );
     }
+    
     private void gameHandler(Request request) throws IOException {
         String x = request.getData("x");
         String y = request.getData("y");
+        String playable = request.getData("current_player");
         Request game = new Request(RequestType.RECEIVE_MOVE);
         game.setData("x", x);
         game.setData("y", y);
+        game.setData("current_player", playable);
         playerTwo.outputStream.writeObject(game);
     }
+    
     private void chatHandler(Request request) throws IOException {
         System.out.println(onlinePlayer.playerName + " is sending msg to " + playerTwo.playerName);
         String msg = request.getData("msg");
@@ -212,7 +216,7 @@ public class ServerSession extends Thread {
     private void closeConnection() throws IOException {
         Server.onlinePlayers.remove(onlinePlayer);
         sendOnlinePlayers();
-                playerSocket.close();
+        playerSocket.close();
 
     }
     //Send signals to all clients

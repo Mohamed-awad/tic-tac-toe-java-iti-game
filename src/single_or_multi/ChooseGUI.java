@@ -16,7 +16,7 @@ import levels.Levels;
 public class ChooseGUI {
 
     GridPane grid = new GridPane();
-
+    
     public void start(Stage primaryStage) throws Exception {
 
         Button btn_log = new Button();

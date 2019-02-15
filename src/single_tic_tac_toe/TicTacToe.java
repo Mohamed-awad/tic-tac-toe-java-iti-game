@@ -30,7 +30,6 @@ public class TicTacToe {
     private Tile[][] gui_board;
     private char[][] back_end_board;
     private char winner;
-    private List<Combo> combos;
     private Combo combo;
 
     public TicTacToe() {
@@ -38,7 +37,6 @@ public class TicTacToe {
         gui_board = new Tile[3][3];
         back_end_board = new char[3][3];
         winner = '-';
-        combos = new ArrayList<>();
     }
 
     public void start(Stage primaryStage) throws Exception {
