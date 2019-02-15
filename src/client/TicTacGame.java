@@ -48,7 +48,7 @@ public class TicTacGame {
 	 private Boolean your_turn ;
 	 private Combo combo;
 	 char winner;
-	 
+	 TextArea showMsgsIn;
 	 Tile board [][] ; 
 	 
 	 public TicTacGame(Boolean x, Boolean y)
@@ -61,18 +61,16 @@ public class TicTacGame {
 
         //chat area
         
-        TextArea showMsgsIn = new TextArea();
+        showMsgsIn = new TextArea();
+        showMsgsIn.setEditable(false);
         showMsgsIn.setPrefHeight(400);  //sets height of the TextArea to 400 pixels 
         showMsgsIn.setPrefWidth(600);    //sets width of the TextArea to 300 pixels
         grid.add(showMsgsIn, 40, 9);
-        
-      
         
         TextField TextInput = new TextField();
         TextInput.setPrefHeight(80);  //sets height of the TextArea to 400 pixels 
         TextInput.setPrefWidth(100);    //sets width of the TextArea to 300 pixels
         TextInput.maxHeight(Double.MAX_VALUE);
-        
         grid.add(TextInput, 40, 10);
         
         Button SendBtn = new Button();
@@ -81,6 +79,22 @@ public class TicTacGame {
         SendBtn.setMaxWidth(Double.MAX_VALUE);
         grid.add(SendBtn, 40, 11);
         grid.add(new StackPane(new Text("")), 10, 20);
+        
+        SendBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(!TextInput.getText().equals(""))
+                {
+                	showMsgsIn.appendText(TextInput.getText()+"\n");
+                	try {
+						ClientApp.sessionHandler.sendMsg(TextInput.getText());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+                	TextInput.setText("");
+                }
+            }
+        });
      
         //End of chat
         grid.setHgap(10);
@@ -97,7 +111,12 @@ public class TicTacGame {
         primaryStage.show();
         grid.requestFocus();
     }
-	    
+	
+    public void setMsg(String msg)
+    {
+    	showMsgsIn.appendText(msg);
+    }
+    
     private class Tile extends StackPane {
 
         private Text text;

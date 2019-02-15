@@ -182,7 +182,6 @@ public class ServerSession extends Thread {
     }
     
     private void chatHandler(Request request) throws IOException {
-        System.out.println(onlinePlayer.playerName + " is sending msg to " + playerTwo.playerName);
         String msg = request.getData("msg");
         Request chatMsg = new Request(RequestType.RECEIVE_MSG);
         chatMsg.setData("msg", msg);

@@ -81,9 +81,9 @@ public class ClientSession extends Thread {
             case RECEIVE_MOVE:
                 handleMove(request);
                 break;
-//            case RECEIVE_MSG:
-//                handleMsg(request);
-//                break;
+            case RECEIVE_MSG:
+                handleMsg(request);
+                break;
         }
     }
 
@@ -198,21 +198,22 @@ public class ClientSession extends Thread {
         });
 
     }
-//
-//    //Handle Chat 
-//    //Handling gaming
-//    public void sendMsg(String msg) throws IOException {
-//        Request chatMsg = new Request(RequestType.SEND_MSG);
-//        chatMsg.setData("msg", msg);
-//        sendingStream.writeObject(chatMsg);
-//    }
-//
-//    private void handleMsg(Request request) {
-//        String msg = request.getData("msg");
-//        System.out.println(msg);
-//        //Handle the gui
-//
-//    }
+
+//    Handle Chat     
+    public void sendMsg(String msg) throws IOException {
+        Request chatMsg = new Request(RequestType.SEND_MSG);
+        chatMsg.setData("msg", msg);
+        sendingStream.writeObject(chatMsg);
+    }
+
+    private void handleMsg(Request request) {
+        String msg = request.getData("msg");
+        System.out.println(msg);
+        Platform.runLater(()->{
+            ClientApp.game.setMsg(msg);
+        });
+
+    }
 //
 //    public void endGame() throws IOException {
 //        Request endRequest = new Request(RequestType.END_GAME);
