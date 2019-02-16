@@ -19,14 +19,14 @@ public class ChooseGUI {
     
     public void start(Stage primaryStage) throws Exception {
 
-        Button btn_log = new Button();
+    	Button btn_log = new Button();
         btn_log.setText("Single Mode");
         btn_log.setId("loginbtn");
-
+        
         Button btn_signup = new Button();
         btn_signup.setText("Multi Mode");
         btn_signup.setId("loginbtn");
-
+        
         // add actions on buttons
         btn_log.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -53,15 +53,14 @@ public class ChooseGUI {
             }
         });
 
-        //grid.setGridLinesVisible(true);
         grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(0, 10, 0, 10));
-        grid.add(btn_log, 0, 15);
-        grid.add(btn_signup, 0, 17);
-        grid.setAlignment(Pos.CENTER);
-        btn_log.setMaxWidth(Double.MAX_VALUE);
-        btn_signup.setMaxWidth(Double.MAX_VALUE);
+	    grid.setVgap(10);
+	    grid.setPadding(new Insets(0, 10, 0, 10));
+	    grid.add(btn_log , 0, 0);
+	    grid.add(btn_signup , 0 , 1);
+	    grid.setAlignment(Pos.CENTER);
+	    btn_log.setMaxWidth(Double.MAX_VALUE);
+	    btn_signup.setMaxWidth(Double.MAX_VALUE);
 
         Scene scene = new Scene(grid, 400, 350);
         scene.getStylesheets().add(Sign_up.class.getResource("style.css").toExternalForm());

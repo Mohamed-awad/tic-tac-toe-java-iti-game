@@ -28,18 +28,21 @@ public class Sign_in {
     GridPane grid = new GridPane();
 
     public void start(Stage primaryStage) {
-        System.out.println(ClientApp.sessionHandler);
-
+    	
         //Login btn
         Button btn = new Button();
         btn.setText("Login");
         btn.setId("loginbtn");
-        // labels
         
+        Button back = new Button();
+        back.setText("Back");
+        back.setId("loginbtn");
+          
         // text field
-        TextField UsText = new TextField();
+        TextField UsText = new TextField(); 
         UsText.setId("UsText");
         UsText.setPromptText("Enter your Name");
+        
         PasswordField PassText = new PasswordField();
         PassText.setId("PassText");
         PassText.setPromptText("Enter your Password");
@@ -83,17 +86,17 @@ public class Sign_in {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-        //grid.setGridLinesVisible(true);
-        // label
-
+        
         // Textfield
-        grid.add(UsText, 0, 13);
-        grid.add(PassText, 0, 14);
-        grid.add(btn, 0, 15);
-        grid.setAlignment(Pos.CENTER);
+        grid.add(UsText , 2 , 3);
+        grid.add(PassText ,2  , 4);
+        grid.add(btn , 2, 5);
+        grid.add(back , 2 , 6);
+        
+        back.setMaxWidth(Double.MAX_VALUE);
         btn.setMaxWidth(Double.MAX_VALUE);
 
-        Scene scene = new Scene(grid, 400, 350);
+        Scene scene = new Scene(grid, 600, 350);
         scene.getStylesheets().add(Sign_up.class.getResource("style.css").toExternalForm());
 
         primaryStage.setTitle("Login");

@@ -19,13 +19,8 @@ public class Server {
     Socket playerSocket;
     public ServerSession connection;
     Thread stServer;
-//  public static  ArrayList<Data> playersInfo;  // array that get the data from data base it will be in thread so that it can be updated every while
     public static ArrayList<Player> onlinePlayers = new ArrayList<>();
-    public static ArrayList<Player> onlineBusyPlayers;
-//        SignUp signUpRequest;
-//        SignIn signInRequest;
-//        public static ArrayList<SavedMultiGames>
-//        public static ArrayList<SavedSingleGames>
+    public static ArrayList<Player> onlineBusyPlayers; 
 
     public void startServer() {
         try {
@@ -54,7 +49,10 @@ public class Server {
         try {
             stServer.stop();
             gameServer.close();
-            connection.disconnectServer();
+            if(!Server.onlinePlayers.isEmpty())
+            {
+            	connection.disconnectServer();
+            }
             System.out.println("Server stopped");
         } catch (IOException ex) {
             System.out.println("error when closing server");

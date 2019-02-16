@@ -1,47 +1,24 @@
 package client;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import client.invite.MultiMain;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import server.assets.Request;
 import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
 
@@ -50,7 +27,6 @@ public class TicTacGame {
     GridPane grid = new GridPane();
     private Boolean playable;
     private Boolean your_turn;
-    private Combo combo;
     char winner;
     TextArea showMsgsIn;
     Tile board[][];
@@ -60,23 +36,43 @@ public class TicTacGame {
         board = new Tile[3][3];
     }
     public void start(Stage primaryStage) {
+    	
         //chat area
         showMsgsIn = new TextArea();
+        showMsgsIn.setId("msgchatarea");
         showMsgsIn.setEditable(false);
-        showMsgsIn.setPrefHeight(400);  //sets height of the TextArea to 400 pixels 
-        showMsgsIn.setPrefWidth(600);    //sets width of the TextArea to 300 pixels
-        grid.add(showMsgsIn, 40, 9);
+        showMsgsIn.setPrefHeight(400);  
+        showMsgsIn.setPrefWidth(600);    
+        grid.add(showMsgsIn, 22,1 , 1, 3);
+        
         TextField TextInput = new TextField();
-        TextInput.setPrefHeight(80);  //sets height of the TextArea to 400 pixels 
-        TextInput.setPrefWidth(100);    //sets width of the TextArea to 300 pixels
+        TextInput.setId("msgsendarea");
+        TextInput.setPrefHeight(65);   
+        
         TextInput.maxHeight(Double.MAX_VALUE);
-        grid.add(TextInput, 40, 10);
+        grid.add(TextInput, 22,1 , 1, 22);
+        
         Button SendBtn = new Button();
         SendBtn.setText("Send");
-        SendBtn.setId("loginbtn");
+        SendBtn.setId("Send");
         SendBtn.setMaxWidth(Double.MAX_VALUE);
-        grid.add(SendBtn, 40, 11);
+        grid.add(SendBtn, 22,2 , 1, 28);
+        
+        Button logout = new Button();
+        logout.setText("logout");
+        logout.setId("logout");
+       
+        logout.setMaxWidth(Double.MAX_VALUE);
+        grid.add(logout, 22,4 , 1, 16);
+        
+        Label status = new Label("Player Turn"); 
+        
+        status.setId("status");
+        status.setAlignment(Pos.CENTER);
+        grid.add(status, 22,2 , 1, 40);
+        
         grid.add(new StackPane(new Text("")), 10, 20);
+        
         SendBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -91,38 +87,48 @@ public class TicTacGame {
                 }
             }
         });
+        
         //End of chat
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-        //grid.setGridLinesVisible(true);
-        Scene scene = new Scene(createContent(), 1350, 750);
-        scene.getStylesheets().add(Sign_up.class.getResource("style.css").toExternalForm());
+        
+        
+        Scene scene = new Scene(createContent(),1500, 1000);
+        scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
+
         primaryStage.setTitle("Tic Tac - ONline Game");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
         grid.requestFocus();
     }
+    
     public void setMsg(String msg) {
         showMsgsIn.appendText(msg);
     }
 
     private class Tile extends StackPane {
 
-        private Text text;
+    	private Text text;
         private Rectangle rect;
         private int row, col;
+        
         public Tile(int row, int col) {
-            this.row = row;
+        	this.row = row;
             this.col = col;
             text = new Text();
-            rect = new Rectangle(190, 190);
-            rect.setFill(Color.BEIGE);
-            rect.setStroke(Color.BLUEVIOLET);
+            rect = new Rectangle(165, 165);
+            rect.setId("rect");
+            
+            rect.setArcHeight(45.0d); 
+            rect.setArcWidth(45.0d); 
+                
+            rect.setFill(Color.rgb(110, 54, 41 , 0.7));
+            rect.setStroke(Color.rgb(131,159,14 ));
             text.setFont(Font.font(60));
-            setAlignment(Pos.CENTER);
             getChildren().addAll(rect, text);
+            
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {   //make left click on mouse
                     if (playable) {
@@ -164,21 +170,8 @@ public class TicTacGame {
         public String get_value() {
             return text.getText();
         }
-        public int getCenterX() {
-            return (int) getTranslateX() + 95;     //to put x in the center
-        }
-        public int getCenterY() {
-            return (int) getTranslateY() + 95;      //to put o in the center
-        }
     }
 
-    private class Combo {
-
-        private Tile[] tiles;
-        public Combo(Tile... tiles) {
-            this.tiles = tiles;
-        }
-    }
     public void setMove(int x, int y, String current_player) {
         your_turn = !your_turn;
         if (current_player.equals("X")) {
@@ -199,7 +192,6 @@ public class TicTacGame {
     }
     private void checkWin(boolean win) {    //check state of the game
         if (checkRows() || checkCols() || checkDs()) {
-            //playWinAnimation(combo);
             if (win) {
             } else {
             }
@@ -210,7 +202,6 @@ public class TicTacGame {
             if (board[i][0].get_value().equals(board[i][1].get_value())
                     && board[i][0].get_value().equals(board[i][2].get_value())
                     && !board[i][0].get_value().equals("")) {
-                combo = new Combo(board[i][0], board[i][1], board[i][2]);
                 if (board[i][0].get_value().equals("X")) {
                     winner = 'x';
                 } else {
@@ -226,7 +217,6 @@ public class TicTacGame {
             if (board[0][i].get_value().equals(board[1][i].get_value())
                     && board[0][i].get_value().equals(board[2][i].get_value())
                     && !board[0][i].get_value().equals("")) {
-                combo = new Combo(board[0][i], board[1][i], board[2][i]);
                 if (board[i][0].get_value().equals("X")) {
                     winner = 'x';
                 } else {
@@ -241,7 +231,6 @@ public class TicTacGame {
         if (board[0][0].get_value().equals(board[1][1].get_value())
                 && board[0][0].get_value().equals(board[2][2].get_value())
                 && !board[0][0].get_value().equals("")) {
-            combo = new Combo(board[0][0], board[1][1], board[2][2]);
             if (board[0][0].get_value().equals("x")) {
                 winner = 'x';
             } else {
@@ -252,7 +241,6 @@ public class TicTacGame {
         if (board[0][2].get_value().equals(board[1][1].get_value())
                 && board[0][2].get_value().equals(board[2][0].get_value())
                 && !board[0][2].get_value().equals("")) {
-            combo = new Combo(board[0][2], board[1][1], board[2][0]);
             if (board[2][0].get_value().equals("x")) {
                 winner = 'x';
             } else {
@@ -261,19 +249,6 @@ public class TicTacGame {
             return true;
         }
         return false;
-    }
-    private void playWinAnimation(Combo combo) {
-        Line line = new Line();
-        line.setStartX(combo.tiles[0].getCenterX());
-        line.setStartY(combo.tiles[0].getCenterY());
-        line.setEndX(combo.tiles[2].getCenterX());
-        line.setEndY(combo.tiles[2].getCenterY());
-        grid.add(line, 40, 10);
-        Timeline timeline = new Timeline();
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1),
-                new KeyValue(line.endXProperty(), combo.tiles[2].getCenterX()),
-                new KeyValue(line.endYProperty(), combo.tiles[2].getCenterY())));
-        timeline.play();
-    }
-    
+    } 
 }
+

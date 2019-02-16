@@ -206,6 +206,7 @@ public class ServerSession extends Thread {
     private void acceptInvitation(Request q) {
         String playerTwoAccepted = q.getData("destination");
         Server.onlinePlayers.forEach(player -> {
+        	System.out.println(playerTwoAccepted);
             if (playerTwoAccepted.equals(player.playerName)) {
                 playerTwo = player;
             }
@@ -234,7 +235,7 @@ public class ServerSession extends Thread {
         playerSocket.close();
     }
     public void disconnectServer() throws IOException{
-        request = new Request(RequestType.SERVER_DISCONNECTED);
-        sendingStream.writeObject(request);
+    		request = new Request(RequestType.SERVER_DISCONNECTED);
+            sendingStream.writeObject(request);
     }
 }

@@ -1,36 +1,33 @@
+
+
 package single_tic_tac_toe;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import signInSignUp.*;
+import signInSignUp.Sign_up;
+
 
 public class TicTacToe {
-
-    private Boolean playable;
-    private Pane root = new Pane();
+    
+	GridPane grid = new GridPane();
+    
+	private Boolean playable;
 
     private Tile[][] gui_board;
     private char[][] back_end_board;
     private char winner;
-    private Combo combo;
 
     public TicTacToe() {
         playable = true;
@@ -40,34 +37,62 @@ public class TicTacToe {
     }
 
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent()));
+    	
+    	Button logout = new Button();
+        logout.setText("logout");
+        logout.setId("logout");
+       
+        logout.setMaxWidth(Double.MAX_VALUE);
+        grid.add(logout, 2,4 , 1, 16);
+              
+        Label status = new Label("Player Turn"); 
+        
+        status.setId("status");
+        status.setAlignment(Pos.CENTER);
+        grid.add(status, 2,2 , 1, 40);
+                  
+        grid.add(new StackPane(new Text("")), 10, 20);
+    	
+        //End of chat
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(0, 10, 0, 10));
+        
+        Scene scene = new Scene(createContent(),880, 550);
+        scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
+
+        primaryStage.setTitle("Tic Tac - Single Game");
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
-
+        grid.requestFocus();
     }
-
+    
     private class Tile extends StackPane {
-
         private Text text;
-        private Rectangle border;
+        private Rectangle rect;
         private int row, col;
 
         public Tile(int row, int col) {
-            this.row = row;
+        	this.row = row;
             this.col = col;
             text = new Text();
-            border = new Rectangle(200, 200);
-            border.setFill(null);
-            border.setStroke(Color.BLACK);
+            rect = new Rectangle(165, 165);
+            rect.setId("rect");
+            
+            rect.setArcHeight(45.0d); 
+            rect.setArcWidth(45.0d); 
+                
+            rect.setFill(Color.rgb(110, 54, 41 , 0.7));
+            rect.setStroke(Color.rgb(131,159,14 ));
             text.setFont(Font.font(60));
-            setAlignment(Pos.CENTER);
-            getChildren().addAll(border, text);
+            getChildren().addAll(rect, text);
 
             setOnMouseClicked(event -> {
                 if (!playable) {
                     return;
                 }
                 if (event.getButton() == MouseButton.PRIMARY) {   //make left click on mouse
-
                     drawX();
                     checkWin();
                     if (!playable) {
@@ -81,22 +106,20 @@ public class TicTacToe {
 
         public void computerPlay() {
 
-            //Choose winning move if available
-            for (int row = 0; row <= 2; row++) {
-                for (int column = 0; column <= 2; column++) {
-                    if (back_end_board[row][column] == '-') {
-                        back_end_board[row][column] = 'o';
-                        if (checkRows() || checkCols() || checkDs()) {
-                            gui_board[row][column].drawO();
-                            return;
-                        } else {
-                            back_end_board[row][column] = '-';
-                        }
+        	//Choose winning move if available
+            for (int column = 0; column <= 2; column++) {
+                if (back_end_board[row][column] == '-') {
+                    back_end_board[row][column] = 'o';
+                    if (checkRows() || checkCols() || checkDs()) {
+                        gui_board[row][column].drawO();
+                        return;
+                    } else {
+                        back_end_board[row][column] = '-';
                     }
                 }
             }
-
-            //Choose blocking move if available
+            
+          //Choose blocking move if available
             for (int row = 0; row <= 2; row++) {
                 for (int column = 0; column <= 2; column++) {
                     if (back_end_board[row][column] == '-') {
@@ -111,7 +134,7 @@ public class TicTacToe {
                     }
                 }
             }
-
+        	
             //Choose center if available
             if (back_end_board[1][1] == '-') {
                 back_end_board[1][1] = 'o';
@@ -164,38 +187,18 @@ public class TicTacToe {
         private void drawO() {
             text.setText("o");
         }
-
-        public double getCenterX() {
-            return getTranslateX() + 100;     //to put x in the center
-        }
-
-        public double getCenterY() {
-            return getTranslateY() + 100;      //to put o in the center
-        }
     }
-
-    private class Combo {
-
-        private Tile[] tiles;
-
-        public Combo(Tile... tiles) {
-            this.tiles = tiles;
-        }
-    }
-
+    
     private Parent createContent() {
-        root.setPrefSize(600, 600);
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Tile tile = new Tile(i, j);
-                tile.setTranslateX(j * 200);
-                tile.setTranslateY(i * 200);
-                root.getChildren().add(tile);
+                grid.add(tile,6+j , 2+i);
                 gui_board[i][j] = tile;
                 back_end_board[i][j] = '-';
             }
         }
-        return root;
+        return grid;
     }
 
     private boolean checkRows() {
@@ -203,7 +206,6 @@ public class TicTacToe {
             if (back_end_board[i][0] == back_end_board[i][1]
                     && back_end_board[i][0] == back_end_board[i][2]
                     && back_end_board[i][0] != '-') {
-                combo = new Combo(gui_board[i][0], gui_board[i][1], gui_board[i][2]);
                 if (back_end_board[i][0] == 'x') {
                     winner = 'x';
                 } else {
@@ -220,7 +222,6 @@ public class TicTacToe {
             if (back_end_board[0][i] == back_end_board[1][i]
                     && back_end_board[0][i] == back_end_board[2][i]
                     && back_end_board[0][i] != '-') {
-                combo = new Combo(gui_board[0][i], gui_board[1][i], gui_board[2][i]);
                 if (back_end_board[i][0] == 'x') {
                     winner = 'x';
                 } else {
@@ -236,7 +237,6 @@ public class TicTacToe {
         if (back_end_board[0][0] == back_end_board[1][1]
                 && back_end_board[0][0] == back_end_board[2][2]
                 && back_end_board[0][0] != '-') {
-            combo = new Combo(gui_board[0][0], gui_board[1][1], gui_board[2][2]);
             if (back_end_board[0][0] == 'x') {
                 winner = 'x';
             } else {
@@ -247,7 +247,6 @@ public class TicTacToe {
         if (back_end_board[0][2] == back_end_board[1][1]
                 && back_end_board[0][2] == back_end_board[2][0]
                 && back_end_board[0][2] != '-') {
-            combo = new Combo(gui_board[0][2], gui_board[1][1], gui_board[2][0]);
             if (back_end_board[2][0] == 'x') {
                 winner = 'x';
             } else {
@@ -258,24 +257,10 @@ public class TicTacToe {
         return false;
     }
 
-    private void checkWin() {    //check state of the game
+    private void checkWin() {
+    	//check state of the game
         if (checkRows() || checkCols() || checkDs()) {
             playable = false;
-            playWinAnimation(combo);
         }
-    }
-
-    private void playWinAnimation(Combo combo) {
-        Line line = new Line();
-        line.setStartX(combo.tiles[0].getCenterX());
-        line.setStartY(combo.tiles[0].getCenterY());
-        line.setEndX(combo.tiles[0].getCenterX());
-        line.setEndY(combo.tiles[0].getCenterY());
-        root.getChildren().add(line);
-        Timeline timeline = new Timeline();
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1),
-                new KeyValue(line.endXProperty(), combo.tiles[2].getCenterX()),
-                new KeyValue(line.endYProperty(), combo.tiles[2].getCenterY())));
-        timeline.play();
-    }
+    } 
 }

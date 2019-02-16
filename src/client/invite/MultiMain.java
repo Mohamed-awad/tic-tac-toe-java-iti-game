@@ -1,3 +1,4 @@
+
 package client.invite;
 
 import java.io.IOException;
@@ -5,6 +6,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -33,8 +36,11 @@ public class MultiMain {
     ArrayList<String> online_players;
     ArrayList<String> players_invite_me;
     public ObservableList<String> sendIvitationObservableList;
+    public ObservableList<String> OFFlinePeople;
+    ArrayList<String> Off_players;
     ListView<String> invitePeopleListView;
     public ObservableList<String> AcceptInvitationObserveList;
+    
     public void start(Stage primaryStage) {
         //Send to online players a hint that i am online 
         //create and set the grid
@@ -45,9 +51,12 @@ public class MultiMain {
         //create the nodes
         Label invitePeople = new Label("People To Invite");
         Label peopleinvited = new Label("People Who Invited You");
+        Label OFF_People = new Label("Offline People");
+        
         Button inviteBtn = new Button("Invite");
         Button acceptBtn = new Button("Accept");
         Button declineBtn = new Button("Decline");
+        
         // send invitation list and accept invitation list
         sendIvitationObservableList = FXCollections.observableArrayList();
         invitePeopleListView = new ListView<String>(sendIvitationObservableList);
@@ -60,17 +69,36 @@ public class MultiMain {
                 current = new_val;
             }
         });
-        AcceptInvitationObserveList = FXCollections.observableArrayList();
-        ListView<String> AcceptInvitationListView = new ListView<String>(AcceptInvitationObserveList);
-        AcceptInvitationListView.setPrefSize(300, 300);
-        AcceptInvitationListView.setOrientation(Orientation.VERTICAL);
-        MultipleSelectionModel<String> lvModule = AcceptInvitationListView.getSelectionModel();
+        
+        // Offline People
+        OFFlinePeople = FXCollections.observableArrayList();
+        ListView<String> Off_players = new ListView<String>(OFFlinePeople);
+        Off_players.setPrefSize(300, 300);
+        Off_players.setOrientation(Orientation.VERTICAL);
+        MultipleSelectionModel<String> lvModule = Off_players.getSelectionModel();
+        
+        
         lvModule.selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov,
                     String old_val, String new_val) {
                 currentInvitation = new_val;
             }
         });
+        
+        
+        
+        AcceptInvitationObserveList = FXCollections.observableArrayList();
+        ListView<String> AcceptInvitationListView = new ListView<String>(AcceptInvitationObserveList);
+        AcceptInvitationListView.setPrefSize(300, 300);
+        AcceptInvitationListView.setOrientation(Orientation.VERTICAL);
+        MultipleSelectionModel<String> lv1Module = AcceptInvitationListView.getSelectionModel();
+        lv1Module.selectedItemProperty().addListener(new ChangeListener<String>() {
+            public void changed(ObservableValue<? extends String> ov,
+                    String old_val, String new_val) {
+                currentInvitation = new_val;
+            }
+        });
+        
         // add action
         inviteBtn.setOnAction((event) -> {
             try {
@@ -81,27 +109,30 @@ public class MultiMain {
             showAlert("invitation sent successfully we will inform you if what is response");
         });
         acceptBtn.setOnAction((event) -> {
-                ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
-
+            ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
         });
         declineBtn.setOnAction((event) -> {
-                ClientApp.sessionHandler.sendReply(currentInvitation, "decline");
-
+            ClientApp.sessionHandler.sendReply(currentInvitation, "decline");
         });
+        
         //added nodes of grid
         grid.add(invitePeople, 0, 0);
         grid.add(invitePeopleListView, 0, 1);
         grid.add(inviteBtn, 0, 2);
         grid.add(peopleinvited, 4, 0);
+        grid.add(OFF_People , 0 , 3);
         grid.add(AcceptInvitationListView, 4, 1);
         grid.add(acceptBtn, 4, 2);
-        grid.add(declineBtn, 4, 3);
+        grid.add(declineBtn, 4, 3 , 1 , 4 );
+        grid.add(Off_players, 0, 4 , 1 , 5);
+        
         //set alignment
         grid.setHalignment(invitePeople, HPos.CENTER);
         grid.setHalignment(peopleinvited, HPos.CENTER);
         grid.setHalignment(inviteBtn, HPos.CENTER);
         grid.setHalignment(acceptBtn, HPos.CENTER);
         grid.setHalignment(declineBtn, HPos.CENTER);
+        
         //setting the stage & scene
         Scene scene = new Scene(grid, 600, 600);
         primaryStage.setTitle("Invitation");

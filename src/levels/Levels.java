@@ -1,6 +1,5 @@
 package levels;
 
-import client.invite.MultiMain;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -21,15 +20,27 @@ public class Levels {
 
     public void start(Stage primaryStage) throws Exception {
 
-        Button btn_log = new Button();
-        btn_log.setText("Easy");
-        btn_log.setId("loginbtn");
+    	Button Easy = new Button();
+        Easy.setText("Easy");
+        Easy.setId("loginbtn");
+        
+        Button Meduim = new Button();
+        Meduim.setText("Meduim");
+        Meduim.setId("loginbtn");
+        
+        Button Hard = new Button();
+        Hard.setText("Hard");
+        Hard.setId("loginbtn");
+        
+        Button Back = new Button();
+        Back.setText("Back");
+        Back.setId("loginbtn");
 
         // add actions on buttons
-        btn_log.setOnAction(new EventHandler<ActionEvent>() {
+        Easy.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                EasyLevel el = new EasyLevel();
+            	EasyLevel el = new EasyLevel();
                 try {
                     el.start(ClientApp.mainStage);
                 } catch (Exception e) {
@@ -37,12 +48,8 @@ public class Levels {
                 }
             }
         });
-
-        Button btn_signup = new Button();
-        btn_signup.setText("Medium");
-        btn_signup.setId("loginbtn");
         
-        btn_signup.setOnAction(new EventHandler<ActionEvent>() {
+        Meduim.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
             	MediumLevel ml = new MediumLevel();
@@ -54,11 +61,7 @@ public class Levels {
             }
         });
         
-        Button btn_hard = new Button();
-        btn_hard.setText("Hard");
-        btn_hard.setId("loginbtn");
-        
-        btn_hard.setOnAction(new EventHandler<ActionEvent>() {
+        Hard.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
             	TicTacToe tt = new TicTacToe();
@@ -70,19 +73,20 @@ public class Levels {
             }
         });
 
-        //grid.setGridLinesVisible(true);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-        grid.add(btn_log, 0, 13);
-        grid.add(btn_signup, 0, 15);
-        grid.add(btn_hard, 0, 17);
+        grid.add(Easy , 0, 0);
+        grid.add(Meduim , 0 , 1);
+        grid.add(Hard , 0 , 2);
+        grid.add(Back , 0 , 3);
         grid.setAlignment(Pos.CENTER);
-        btn_log.setMaxWidth(Double.MAX_VALUE);
-        btn_signup.setMaxWidth(Double.MAX_VALUE);
-        btn_hard.setMaxWidth(Double.MAX_VALUE);
+        Easy.setMaxWidth(Double.MAX_VALUE);
+        Meduim.setMaxWidth(Double.MAX_VALUE);
+        Hard.setMaxWidth(Double.MAX_VALUE);
+        Back.setMaxWidth(Double.MAX_VALUE);
 
-        Scene scene = new Scene(grid, 400, 350);
+        Scene scene = new Scene(grid, 400, 500);
         scene.getStylesheets().add(Sign_up.class.getResource("style.css").toExternalForm());
 
         primaryStage.setTitle("Game Levels");
@@ -92,3 +96,4 @@ public class Levels {
         grid.requestFocus();
     }
 }
+  
