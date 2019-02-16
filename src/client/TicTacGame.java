@@ -19,11 +19,15 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import server.assets.Request;
+import server.assets.RequestType;
 import signInSignUp.ClientApp;
+import static signInSignUp.ClientApp.sessionHandler;
 import signInSignUp.Sign_up;
 
 public class TicTacGame {
-
+    public Scene scene;
     GridPane grid = new GridPane();
     private Boolean playable;
     private Boolean your_turn;
@@ -92,18 +96,17 @@ public class TicTacGame {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-        
-        
-        Scene scene = new Scene(createContent(),1500, 1000);
+   
+        Scene scene = new Scene(createContent(),1350, 750);
         scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
-
+     
         primaryStage.setTitle("Tic Tac - ONline Game");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
         grid.requestFocus();
     }
-    
+
     public void setMsg(String msg) {
         showMsgsIn.appendText(msg);
     }
@@ -249,6 +252,25 @@ public class TicTacGame {
             return true;
         }
         return false;
-    } 
+    }
+    //End game with another player (motaz)
+    public void disconnectGame() throws IOException{
+        Request r = new Request(RequestType.END_GAME);
+        ClientApp.sessionHandler.sendingStream.writeObject(r);
+    }
+
+    private void playWinAnimation(Combo combo) {
+        Line line = new Line();
+        line.setStartX(combo.tiles[0].getCenterX());
+        line.setStartY(combo.tiles[0].getCenterY());
+        line.setEndX(combo.tiles[2].getCenterX());
+        line.setEndY(combo.tiles[2].getCenterY());
+        grid.add(line, 40, 10);
+        Timeline timeline = new Timeline();
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1),
+                new KeyValue(line.endXProperty(), combo.tiles[2].getCenterX()),
+                new KeyValue(line.endYProperty(), combo.tiles[2].getCenterY())));
+        timeline.play();
+    }
 }
 

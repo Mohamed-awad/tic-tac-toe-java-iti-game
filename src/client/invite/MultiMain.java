@@ -102,14 +102,20 @@ public class MultiMain {
         // add action
         inviteBtn.setOnAction((event) -> {
             try {
-                ClientApp.sessionHandler.sendInvitation(current);
+                if (current != null) {
+                    ClientApp.sessionHandler.sendInvitation(current);
+                }
+                current = null;
             } catch (IOException ex) {
                 Logger.getLogger(MultiMain.class.getName()).log(Level.SEVERE, null, ex);
             }
             showAlert("invitation sent successfully we will inform you if what is response");
         });
         acceptBtn.setOnAction((event) -> {
-            ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
+            if (currentInvitation != null) {
+                ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
+            }
+            currentInvitation = null;
         });
         declineBtn.setOnAction((event) -> {
             ClientApp.sessionHandler.sendReply(currentInvitation, "decline");

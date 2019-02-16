@@ -33,5 +33,6 @@ public enum RequestType {
     MULTI_GAME,
     CONNECTION_LOST,
     SERVER_DISCONNECTED,
+    BUSY_PLAYER,
 	
 }

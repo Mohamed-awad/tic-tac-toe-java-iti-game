@@ -5,12 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import client.invite.MultiMain;
 import javafx.application.Platform;
-import server.Player;
 import server.assets.Request;
 import server.assets.RequestType;
 import signInSignUp.ClientApp;
@@ -43,10 +38,7 @@ public class ClientSession extends Thread {
                 request = (Request) recievingStream.readObject();
                 requestHandler(request);
             } catch (IOException ex) {
-                System.out.println(ex);
             } catch (ClassNotFoundException ex) {
-                System.out.println("ddsad");
-                Logger.getLogger(ClientSession.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -88,6 +80,11 @@ public class ClientSession extends Thread {
             case SERVER_DISCONNECTED:
                 Platform.runLater(() -> {
                     ClientApp.disconnectServer();
+                });
+                break;
+            case BUSY_PLAYER: //remove the player from the lists
+                Platform.runLater(() -> {
+                    ClientApp.removeBusyPlayer(request.getData("busy"));
                 });
                 break;
         }
@@ -140,22 +137,14 @@ public class ClientSession extends Thread {
             ClientApp.multiMain.AcceptInvitationObserveList.add(sourceOfInv);
         });
     }
-    public void sendReply(String playerName, String replyResult) {
-        try{
+    public void sendReply(String playerName, String replyResult) throws IOException {
             Request reply = new Request(RequestType.SEND_REPLY);
-        if ("accept".equals(replyResult)) {
-            acceptInvitation(playerName, true, true);
-        }
-        reply.setData("reply", replyResult);
-        reply.setData("destination", playerName);
-        sendingStream.writeObject(reply);        
-        }catch(IOException e){
-            Platform.runLater(()->{
-                ClientApp.connectionError();
-            });
-            
-        }
-
+            if ("accept".equals(replyResult)) {
+                acceptInvitation(playerName, true, true);
+            }
+            reply.setData("reply", replyResult);
+            reply.setData("destination", playerName);
+            sendingStream.writeObject(reply);
     }
     public void handleReply(Request request) throws IOException {
         String result = request.getData("reply");

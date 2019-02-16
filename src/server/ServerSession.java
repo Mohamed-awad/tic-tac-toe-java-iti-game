@@ -1,15 +1,12 @@
 package server;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import db.DB;
-import java.io.DataOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
 import server.assets.Request;
@@ -23,14 +20,12 @@ public class ServerSession extends Thread {
     ObjectInputStream recievingStream;
     ObjectOutputStream sendingStream;
     Request request;
-    ObjectInputStream p2RecievingStream;
-    ObjectOutputStream p2SendingStream;
     DB database;
     //In this constructor i create recieveing from player
-    public ServerSession(Socket ps) throws IOException {
+    public ServerSession(Socket ps , ObjectOutputStream sendingStream) throws IOException {
         playerSocket = ps;
         recievingStream = new ObjectInputStream(ps.getInputStream());
-        sendingStream = new ObjectOutputStream(ps.getOutputStream());
+        this.sendingStream = sendingStream;
         database = new DB();
         setDaemon(true);
         start();
@@ -53,7 +48,6 @@ public class ServerSession extends Thread {
                 signUpHandler(request);
                 break;
             case LOGIN:
-                System.out.println("handling login");
                 loginHandler(request);
                 break;
             case ONLINE_PLAYERS:
@@ -83,9 +77,9 @@ public class ServerSession extends Thread {
             case END_SESSION:
                 closeConnection();
                 break;
-//            case END_GAME:
-//                playerTwo = null;
-//                break;
+            case END_GAME: //End the game while playing
+                endGame();
+                break;
         }
     }
     public void signUpHandler(Request signUpRequest) throws IOException {
@@ -116,9 +110,7 @@ public class ServerSession extends Thread {
                 onlinePlayer = new Player(recievingStream, sendingStream, loginRequest.getData("username"), "online");
                 Server.onlinePlayers.add(onlinePlayer);
                 Request loginSuccessRequest = new Request(RequestType.LOGIN_SUCCESS);
-                System.out.println("before sending");
                 sendingStream.writeObject(loginSuccessRequest);
-                System.out.println("lets send");
             } else {
                 Request loginSuccessRequest = new Request(RequestType.LOGIN_FAILED);
                 sendingStream.writeObject(loginSuccessRequest);
@@ -209,6 +201,12 @@ public class ServerSession extends Thread {
         	System.out.println(playerTwoAccepted);
             if (playerTwoAccepted.equals(player.playerName)) {
                 playerTwo = player;
+                try {
+                    sendBusyPlayer(player.playerName); //Send to all players that this player is busy
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                player.setSign('b'); // Set his sign to be busy
             }
         });
     }
@@ -216,7 +214,9 @@ public class ServerSession extends Thread {
         request = new Request(RequestType.ONLINE_PLAYERS);
         ArrayList<String> arr = new ArrayList<>();
         for (int i = 0; i < Server.onlinePlayers.size(); i++) {
-            arr.add(Server.onlinePlayers.get(i).playerName);
+            if (Server.onlinePlayers.get(i).getSign() == 'd') {
+                arr.add(Server.onlinePlayers.get(i).playerName);
+            }
         }
         request.set_online_Data("online_players", arr);
         for (int i = 0; i < Server.onlinePlayers.size(); i++) {
@@ -229,13 +229,28 @@ public class ServerSession extends Thread {
         onlinePlayer.setSign('d');
         sendOnlinePlayers();
     }
-    private void closeConnection() throws IOException {
+    private void closeConnection() throws IOException { // if a player close the window
         Server.onlinePlayers.remove(onlinePlayer);
+        sendBusyPlayer(onlinePlayer.playerName);
         sendOnlinePlayers();
         playerSocket.close();
     }
+
     public void disconnectServer() throws IOException{
     		request = new Request(RequestType.SERVER_DISCONNECTED);
             sendingStream.writeObject(request);
+
+    private void endGame() throws IOException {
+        request = new Request(RequestType.CONNECTION_LOST);
+        playerTwo.outputStream.writeObject(request);
+    }
+    public void sendBusyPlayer(String name) throws IOException {
+        request = new Request(RequestType.BUSY_PLAYER);
+        request.setData("busy", name);
+        for (int i = 0; i < Server.onlinePlayers.size(); i++) {
+            if (Server.onlinePlayers.get(i).getSign() == 'd') {
+                Server.onlinePlayers.get(i).outputStream.writeObject(request);
+            }
+        }
     }
 }
