@@ -8,12 +8,12 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="JavaFXApplication6.jar" size="157642" download="eager" />
+    <jar href="JavaFXApplication6.jar" size="8584672" download="eager" />
     <jar href="lib/mysql-connector-java-5.1.23-bin.jar" size="834126" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="JavaFXApplication6" >
     <param name="requiredFXVersion" value="8.0+"/>
   </applet-desc>
-  <jfx:javafx-desc  width="800" height="600" main-class="client.TicTacGame1"  name="JavaFXApplication6" />
+  <jfx:javafx-desc  width="800" height="600" main-class="signInSignUp.ClientApp"  name="JavaFXApplication6" />
   <update check="always"/>
 </jnlp>

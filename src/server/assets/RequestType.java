@@ -23,5 +23,7 @@ public enum RequestType {
 	END_GAME,
     END_SESSION,
     MULTI_GAME,
+    CONNECTION_LOST,
+    SERVER_DISCONNECTED,
 	
 }

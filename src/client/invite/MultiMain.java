@@ -81,18 +81,12 @@ public class MultiMain {
             showAlert("invitation sent successfully we will inform you if what is response");
         });
         acceptBtn.setOnAction((event) -> {
-            try {
                 ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
-            } catch (IOException ex) {
-                Logger.getLogger(MultiMain.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
         });
         declineBtn.setOnAction((event) -> {
-            try {
                 ClientApp.sessionHandler.sendReply(currentInvitation, "decline");
-            } catch (IOException ex) {
-                Logger.getLogger(MultiMain.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
         });
         //added nodes of grid
         grid.add(invitePeople, 0, 0);

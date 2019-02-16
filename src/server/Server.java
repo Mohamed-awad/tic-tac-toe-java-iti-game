@@ -54,6 +54,7 @@ public class Server {
         try {
             stServer.stop();
             gameServer.close();
+            connection.disconnectServer();
             System.out.println("Server stopped");
         } catch (IOException ex) {
             System.out.println("error when closing server");

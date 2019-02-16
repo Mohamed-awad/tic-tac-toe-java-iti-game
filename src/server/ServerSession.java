@@ -169,8 +169,7 @@ public class ServerSession extends Thread {
         }
         );
     }
-    
-    private void gameHandler(Request request) throws IOException {
+    private void gameHandler(Request request) {
         String x = request.getData("x");
         String y = request.getData("y");
         String playable = request.getData("current_player");
@@ -178,14 +177,31 @@ public class ServerSession extends Thread {
         game.setData("x", x);
         game.setData("y", y);
         game.setData("current_player", playable);
-        playerTwo.outputStream.writeObject(game);
+        try {
+            playerTwo.outputStream.writeObject(game);
+        } catch (Exception e) {
+            request = new Request(RequestType.CONNECTION_LOST);
+            try {
+                sendingStream.writeObject(request);
+            } catch (IOException ex) {
+                Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
-    
-    private void chatHandler(Request request) throws IOException {
-        String msg = request.getData("msg");
-        Request chatMsg = new Request(RequestType.RECEIVE_MSG);
-        chatMsg.setData("msg", msg);
-        playerTwo.outputStream.writeObject(chatMsg);
+    private void chatHandler(Request request) {
+        try {
+            String msg = request.getData("msg");
+            Request chatMsg = new Request(RequestType.RECEIVE_MSG);
+            chatMsg.setData("msg", msg);
+            playerTwo.outputStream.writeObject(chatMsg);
+        } catch (IOException e) {
+            request = new Request(RequestType.CONNECTION_LOST);
+            try {
+                sendingStream.writeObject(request);
+            } catch (IOException ex) {
+                Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     private void acceptInvitation(Request q) {
         String playerTwoAccepted = q.getData("destination");
@@ -216,11 +232,9 @@ public class ServerSession extends Thread {
         Server.onlinePlayers.remove(onlinePlayer);
         sendOnlinePlayers();
         playerSocket.close();
-
     }
-    //Send signals to all clients
-    public void endConnection() throws IOException{
-        playerSocket.close();
+    public void disconnectServer() throws IOException{
+        request = new Request(RequestType.SERVER_DISCONNECTED);
+        sendingStream.writeObject(request);
     }
-    
 }
