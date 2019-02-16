@@ -5,8 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import static javafx.application.Application.launch;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import static signInSignUp.ClientApp.sessionHandler;
 import signInSignUp.Sign_up;
 
 public class Server_Mode extends Application {

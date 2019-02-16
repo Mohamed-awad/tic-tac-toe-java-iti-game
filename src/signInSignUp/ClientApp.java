@@ -7,8 +7,6 @@ import client.ClientSession;
 import client.TicTacGame;
 import client.invite.MultiMain;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -20,8 +18,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -47,7 +43,7 @@ public class ClientApp extends Application {
             alert.setContentText("Connection lost");
             Optional<ButtonType> result = alert.showAndWait();
             System.out.println(result.get());
-            if(result.get()==ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 Platform.exit();
             }
         }
@@ -111,10 +107,13 @@ public class ClientApp extends Application {
     }
     @Override
     public void stop() throws IOException {
+        try {
+            game.disconnectGame(); //if the player is in a game with another player if it's not it will continue
+        } catch (Exception e) {
+        }
         sessionHandler.endConnection();
         Platform.exit();
     }
-    
     public static void connectionError() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Connection problem");
@@ -124,32 +123,32 @@ public class ClientApp extends Application {
         System.out.println(result.get());
         if (result.get() == ButtonType.OK) {
             try {
-                ClientApp.sessionHandler.startMultiGame();
+                ClientApp.sessionHandler.startMultiGame(); // if other player disconnected
                 ClientApp.multiMain.start(ClientApp.mainStage);
             } catch (IOException ex) {
-                Alert serverError = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Connection problem");
-                alert.setHeaderText(null);
-                alert.setContentText("Connection lost with server");
-                Optional<ButtonType> serverresult = serverError.showAndWait();
-                if (serverresult.get() == ButtonType.OK) {
-                    Platform.exit();
-                };
+                disconnectServer();
             }
         }
     }
-    
-        public static void disconnectServer() {
+    public static void disconnectServer() { //WHEN server disconnect 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Connection problem");
         alert.setHeaderText(null);
         alert.setContentText("Disconnect from server");
         Optional<ButtonType> result = alert.showAndWait();
-        System.out.println(result.get());
         if (result.get() == ButtonType.OK) {
-                    Platform.exit();
-                };
-            }
+            Platform.exit();
+        };
+    }
+    public static void removeBusyPlayer(String p) { // Remove player from list when he logout or start playing
+        if (multiMain.AcceptInvitationObserveList.contains(p)) {
+            multiMain.AcceptInvitationObserveList.remove(p);
+        }
+        if (multiMain.sendIvitationObservableList.contains(p)) {
+            multiMain.sendIvitationObservableList.remove(p);
+            System.out.println((String) p);
+        }
+    }
     public static void main(String[] args) {
         launch(args);
     }
