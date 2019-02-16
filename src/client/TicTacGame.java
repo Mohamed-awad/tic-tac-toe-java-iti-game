@@ -19,40 +19,41 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import server.assets.Request;
 import server.assets.RequestType;
 import signInSignUp.ClientApp;
-import static signInSignUp.ClientApp.sessionHandler;
 import signInSignUp.Sign_up;
 
 public class TicTacGame {
-    public Scene scene;
-    GridPane grid = new GridPane();
+	
+	public Scene scene;
+	GridPane grid = new GridPane();
     private Boolean playable;
     private Boolean your_turn;
     char winner;
     TextArea showMsgsIn;
+    TextField TextInput;
     Tile board[][];
     public TicTacGame(Boolean x, Boolean y) {
         your_turn = y;
         playable = x;
         board = new Tile[3][3];
-    }
-    public void start(Stage primaryStage) {
-    	
-        //chat area
         showMsgsIn = new TextArea();
+        TextInput = new TextField();
+    }
+
+    public void start(Stage primaryStage) {
+   
+        //chat area
+        
         showMsgsIn.setId("msgchatarea");
         showMsgsIn.setEditable(false);
-        showMsgsIn.setPrefHeight(400);  
-        showMsgsIn.setPrefWidth(600);    
+        showMsgsIn.setPrefHeight(400);  //sets height of the TextArea to 400 pixels 
+        showMsgsIn.setPrefWidth(600);    //sets width of the TextArea to 300 pixels
         grid.add(showMsgsIn, 22,1 , 1, 3);
         
-        TextField TextInput = new TextField();
         TextInput.setId("msgsendarea");
-        TextInput.setPrefHeight(65);   
-        
+        TextInput.setPrefHeight(65);  //sets height of the TextArea to 400 pixels 
         TextInput.maxHeight(Double.MAX_VALUE);
         grid.add(TextInput, 22,1 , 1, 22);
         
@@ -61,6 +62,21 @@ public class TicTacGame {
         SendBtn.setId("Send");
         SendBtn.setMaxWidth(Double.MAX_VALUE);
         grid.add(SendBtn, 22,2 , 1, 28);
+        
+        SendBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (!TextInput.getText().equals("")) {
+                    showMsgsIn.appendText(TextInput.getText() + "\n");
+                    try {
+                        ClientApp.sessionHandler.sendMsg(TextInput.getText() + "\n");
+                    } catch (IOException e) {
+                        ClientApp.connectionError();
+                    }
+                    TextInput.setText("");
+                }
+            }
+        });
         
         Button logout = new Button();
         logout.setText("logout");
@@ -74,59 +90,40 @@ public class TicTacGame {
         status.setId("status");
         status.setAlignment(Pos.CENTER);
         grid.add(status, 22,2 , 1, 40);
-        
+            
         grid.add(new StackPane(new Text("")), 10, 20);
-        
-        SendBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (!TextInput.getText().equals("")) {
-                    showMsgsIn.appendText(TextInput.getText() + "\n");
-                    try {
-                        ClientApp.sessionHandler.sendMsg(TextInput.getText());
-                    } catch (IOException e) {
-                        ClientApp.connectionError();
-                    }
-                    TextInput.setText("");
-                }
-            }
-        });
         
         //End of chat
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-   
-        Scene scene = new Scene(createContent(),1350, 750);
-        scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
      
+        Scene scene = new Scene(createContent(),1150, 600);
+        scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
+
         primaryStage.setTitle("Tic Tac - ONline Game");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
         grid.requestFocus();
     }
-
-    public void setMsg(String msg) {
-        showMsgsIn.appendText(msg);
-    }
-
+	    
     private class Tile extends StackPane {
 
-    	private Text text;
+        private Text text;
         private Rectangle rect;
         private int row, col;
-        
+
         public Tile(int row, int col) {
-        	this.row = row;
+            this.row = row;
             this.col = col;
             text = new Text();
             rect = new Rectangle(165, 165);
             rect.setId("rect");
-            
+        
             rect.setArcHeight(45.0d); 
-            rect.setArcWidth(45.0d); 
-                
+            rect.setArcWidth(45.0d);          
+            
             rect.setFill(Color.rgb(110, 54, 41 , 0.7));
             rect.setStroke(Color.rgb(131,159,14 ));
             text.setFont(Font.font(60));
@@ -174,7 +171,21 @@ public class TicTacGame {
             return text.getText();
         }
     }
-
+    
+    public void setMsg(String msg) {
+        showMsgsIn.appendText(msg);
+    }
+    
+    private Parent createContent() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                Tile tile = new Tile(i, j);
+                board[i][j] = tile;
+                grid.add(tile, 15 + j, 2 + i);
+            }
+        }
+        return grid;
+    }
     public void setMove(int x, int y, String current_player) {
         your_turn = !your_turn;
         if (current_player.equals("X")) {
@@ -183,22 +194,13 @@ public class TicTacGame {
             board[x][y].drawO();
         }
     }
-    private Parent createContent() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                Tile tile = new Tile(i, j);
-                board[i][j] = tile;
-                grid.add(tile, 33 + j, 7 + i);
-            }
-        }
-        return grid;
-    }
+    
     private void checkWin(boolean win) {    //check state of the game
         if (checkRows() || checkCols() || checkDs()) {
             if (win) {
             } else {
             }
-        }
+	    }
     }
     private boolean checkRows() {
         for (int i = 0; i < 3; i++) {

@@ -190,7 +190,6 @@ public class ClientSession extends Thread {
     }
     private void handleMsg(Request request) {
         String msg = request.getData("msg");
-        System.out.println(msg);
         Platform.runLater(() -> {
             ClientApp.game.setMsg(msg);
         });
