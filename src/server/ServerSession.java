@@ -239,7 +239,7 @@ public class ServerSession extends Thread {
     public void disconnectServer() throws IOException{
     		request = new Request(RequestType.SERVER_DISCONNECTED);
             sendingStream.writeObject(request);
-
+    }
     private void endGame() throws IOException {
         request = new Request(RequestType.CONNECTION_LOST);
         playerTwo.outputStream.writeObject(request);

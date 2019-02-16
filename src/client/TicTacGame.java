@@ -258,19 +258,5 @@ public class TicTacGame {
         Request r = new Request(RequestType.END_GAME);
         ClientApp.sessionHandler.sendingStream.writeObject(r);
     }
-
-    private void playWinAnimation(Combo combo) {
-        Line line = new Line();
-        line.setStartX(combo.tiles[0].getCenterX());
-        line.setStartY(combo.tiles[0].getCenterY());
-        line.setEndX(combo.tiles[2].getCenterX());
-        line.setEndY(combo.tiles[2].getCenterY());
-        grid.add(line, 40, 10);
-        Timeline timeline = new Timeline();
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1),
-                new KeyValue(line.endXProperty(), combo.tiles[2].getCenterX()),
-                new KeyValue(line.endYProperty(), combo.tiles[2].getCenterY())));
-        timeline.play();
-    }
 }
 

@@ -113,12 +113,20 @@ public class MultiMain {
         });
         acceptBtn.setOnAction((event) -> {
             if (currentInvitation != null) {
-                ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
+                try {
+					ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
             }
             currentInvitation = null;
         });
         declineBtn.setOnAction((event) -> {
-            ClientApp.sessionHandler.sendReply(currentInvitation, "decline");
+            try {
+				ClientApp.sessionHandler.sendReply(currentInvitation, "decline");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
         });
         
         //added nodes of grid
