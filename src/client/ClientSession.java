@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+
+import com.sun.media.jfxmedia.events.PlayerTimeListener;
+
 import javafx.application.Platform;
 import server.assets.Request;
 import server.assets.RequestType;
@@ -87,6 +90,12 @@ public class ClientSession extends Thread {
                     ClientApp.removeBusyPlayer(request.getData("busy"));
                 });
                 break;
+            case QUIT_GAME :
+            	System.out.println("efknb");
+                Platform.runLater(() -> {
+                    ClientApp.connectionError();
+                });
+                break;
         }
     }
     // send sign up Request
@@ -115,6 +124,7 @@ public class ClientSession extends Thread {
                 ClientApp.multiMain.sendIvitationObservableList.clear();
                 for (int i = 0; i < online_players.size(); i++) {
                     if (!online_players.get(i).equals(source)) {
+                    	System.out.println("------->>> " + online_players.get(i));
                         ClientApp.multiMain.sendIvitationObservableList.add(online_players.get(i));
                     }
                 }
@@ -194,12 +204,18 @@ public class ClientSession extends Thread {
             ClientApp.game.setMsg(msg);
         });
     }
+    
+    public void quitGame() throws IOException {
+    	request = new Request(RequestType.QUIT_GAME);
+    	sendingStream.writeObject(request);
+    }
 //
 //    public void endGame() throws IOException {
 //        Request endRequest = new Request(RequestType.END_GAME);
 //        sendingStream.writeObject(endRequest);
 //    }
     public void startMultiGame() throws IOException {
+    	System.out.println("start mmmmmmmm");
         request = new Request(RequestType.MULTI_GAME);
         sendingStream.writeObject(request);
     }

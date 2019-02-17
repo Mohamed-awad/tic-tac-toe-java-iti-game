@@ -1,6 +1,10 @@
 
 package single_tic_tac_toe;
 
+import java.net.UnknownHostException;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -15,6 +19,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import levels.Levels;
+import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
 
 
@@ -38,12 +44,26 @@ public class MediumLevel {
     public void start(Stage primaryStage) throws Exception {
     	
     	Button logout = new Button();
-        logout.setText("logout");
+        logout.setText("Back");
         logout.setId("logout");
        
         logout.setMaxWidth(Double.MAX_VALUE);
         grid.add(logout, 2,4 , 1, 16);
-              
+        
+        logout.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+					Levels levels = new Levels();
+					levels.start(ClientApp.mainStage);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+            }
+        });
+        
         Label status = new Label("Player Turn"); 
         
         status.setId("status");

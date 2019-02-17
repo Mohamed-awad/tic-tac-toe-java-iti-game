@@ -132,8 +132,8 @@ public class ClientApp extends Application {
         System.out.println(result.get());
         if (result.get() == ButtonType.OK) {
             try {
-                ClientApp.sessionHandler.startMultiGame(); // if other player disconnected
                 ClientApp.multiMain.start(ClientApp.mainStage);
+                ClientApp.sessionHandler.startMultiGame(); // if other player disconnected
             } catch (IOException ex) {
                 disconnectServer();
             }

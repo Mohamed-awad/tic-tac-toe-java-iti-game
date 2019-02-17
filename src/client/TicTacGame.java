@@ -1,6 +1,9 @@
 package client;
 
 import java.io.IOException;
+
+import client.invite.MultiMain;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -79,11 +82,28 @@ public class TicTacGame {
         });
         
         Button logout = new Button();
-        logout.setText("logout");
+        logout.setText("Back");
         logout.setId("logout");
        
         logout.setMaxWidth(Double.MAX_VALUE);
         grid.add(logout, 22,4 , 1, 16);
+        
+        logout.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Platform.runLater(()->{
+					try {
+						ClientApp.multiMain.start(ClientApp.mainStage);
+						ClientApp.sessionHandler.quitGame();
+						ClientApp.sessionHandler.startMultiGame();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+               		
+				});
+            }
+        });
         
         Label status = new Label("Player Turn"); 
         

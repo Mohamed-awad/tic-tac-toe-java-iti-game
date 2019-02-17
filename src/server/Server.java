@@ -62,7 +62,6 @@ public class Server {
             }
             clients.clear();
             gameServer.close();
-
             if(!Server.onlinePlayers.isEmpty())
             {
             	connection.disconnectServer();

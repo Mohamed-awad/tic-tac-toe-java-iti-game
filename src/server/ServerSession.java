@@ -80,9 +80,18 @@ public class ServerSession extends Thread {
             case END_GAME: //End the game while playing
                 endGame();
                 break;
+            case QUIT_GAME :
+            	quitGame();
+            	break;
         }
     }
-    public void signUpHandler(Request signUpRequest) throws IOException {
+    private void quitGame() throws IOException {
+		request = new Request(RequestType.QUIT_GAME);
+		System.out.println("sssssssssssss");
+		playerTwo.outputStream.writeObject(request);
+		
+	}
+	public void signUpHandler(Request signUpRequest) throws IOException {
         String user_name = signUpRequest.getData("username");
         String user_pass = signUpRequest.getData("pass");
         try {
@@ -139,8 +148,6 @@ public class ServerSession extends Thread {
                 } catch (IOException ex) {
                     Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
                 }
-//               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
-//               p2RecievingStream = new DataInputStream(playerTwo.playerSocket.getInputStream());
             }
         });
     }
@@ -216,11 +223,13 @@ public class ServerSession extends Thread {
         for (int i = 0; i < Server.onlinePlayers.size(); i++) {
             if (Server.onlinePlayers.get(i).getSign() == 'd') {
                 arr.add(Server.onlinePlayers.get(i).playerName);
+                System.out.println(Server.onlinePlayers.get(i).playerName);
             }
         }
         request.set_online_Data("online_players", arr);
         for (int i = 0; i < Server.onlinePlayers.size(); i++) {
             if (Server.onlinePlayers.get(i).getSign() == 'd') {
+                System.out.println(Server.onlinePlayers.get(i).playerName);
                 Server.onlinePlayers.get(i).outputStream.writeObject(request);
             }
         }
@@ -229,10 +238,14 @@ public class ServerSession extends Thread {
         onlinePlayer.setSign('d');
         sendOnlinePlayers();
     }
-    private void closeConnection() throws IOException { // if a player close the window
-        Server.onlinePlayers.remove(onlinePlayer);
-        sendBusyPlayer(onlinePlayer.playerName);
-        sendOnlinePlayers();
+    private void closeConnection() throws IOException { 
+    	// if a player close the window
+        if(onlinePlayer != null)
+        {
+        	Server.onlinePlayers.remove(onlinePlayer);
+        	sendBusyPlayer(onlinePlayer.playerName);
+        	sendOnlinePlayers();
+        }
         playerSocket.close();
     }
 

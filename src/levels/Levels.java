@@ -1,5 +1,7 @@
 package levels;
 
+import java.net.UnknownHostException;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -10,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
+import single_or_multi.ChooseGUI;
 import single_tic_tac_toe.EasyLevel;
 import single_tic_tac_toe.MediumLevel;
 import single_tic_tac_toe.TicTacToe;
@@ -70,6 +73,19 @@ public class Levels {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        
+        Back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+					ClientApp.choice.start(ClientApp.mainStage);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
             }
         });
 

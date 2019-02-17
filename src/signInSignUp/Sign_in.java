@@ -82,6 +82,21 @@ public class Sign_in {
                 }
             }
         });
+        
+        back.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+					ClientApp ca = new ClientApp();
+					ca.start(ClientApp.mainStage);
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+            }
+        });
+        
 
         grid.setHgap(10);
         grid.setVgap(10);
