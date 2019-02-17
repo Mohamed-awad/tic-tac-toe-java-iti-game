@@ -13,4 +13,12 @@ public class Player {
         this.status = status;
         this.score = score;
     }
+    public String getUserName()
+    {
+    	return this.username;
+    }
+    public int getScore()
+    {
+    	return this.score;
+    }
 }

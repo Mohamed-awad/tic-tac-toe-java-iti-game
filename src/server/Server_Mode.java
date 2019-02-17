@@ -18,6 +18,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import static javafx.application.Application.launch;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,7 +29,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import signInSignUp.Sign_up;
+import db.DB;
 import db.Player;
+import db.UserAccount;
 
 public class Server_Mode extends Application {
 
@@ -35,29 +40,29 @@ public class Server_Mode extends Application {
     public void start(Stage primaryStage) throws Exception {
         myServer = new Server();
         
-        TableView<Player> table = new TableView<Player>();
+        TableView<UserAccount> table = new TableView<UserAccount>();
         
         // Create column UserName (Data type of String).
-        TableColumn<Player, String> userNameCol //
-                = new TableColumn<Player, String>("UserName");
+        TableColumn<UserAccount, String> userNameCol //
+                = new TableColumn<UserAccount, String>("User Name");
    
         // Active Column
-        TableColumn<Player, Integer> activeCol//
-                = new TableColumn<Player, Integer>("Score");
+        TableColumn<UserAccount, Boolean> activeCol//
+                = new TableColumn<UserAccount, Boolean>("Active");
    
         // Defines how to fill data for each cell.
         // Get value from property of UserAccount. .
-        userNameCol.setCellValueFactory(new PropertyValueFactory<>("username"));
+        userNameCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
         userNameCol.setId("UserCol");
    
-        activeCol.setCellValueFactory(new PropertyValueFactory<>("score"));
+        activeCol.setCellValueFactory(new PropertyValueFactory<>("active"));
       
         // Set Sort type for userName column
         userNameCol.setSortType(TableColumn.SortType.DESCENDING);
         
    
         // Display row data
-        ObservableList<Player> list = getUserList();
+        ObservableList<UserAccount> list = getUserList();
         table.setItems(list);
    
         table.getColumns().addAll(userNameCol, activeCol);
@@ -114,10 +119,14 @@ public class Server_Mode extends Application {
         
     }
     
-    private ObservableList<Player> getUserList() {
-    	// get all players from database
-    	
-    	ObservableList<Player> list = FXCollections.observableArrayList();
+    private ObservableList<UserAccount> getUserList() throws SQLException {
+    	ArrayList<Player> players = new DB().getAll();
+    	ObservableList<UserAccount> list = FXCollections.observableArrayList();
+    	for (int i = 0; i < players.size(); i++) {
+			Player p = players.get(i);
+			UserAccount user1 = new UserAccount(i+1L, p.username , p.score);
+			list.add(user1);
+		}  
         return list;
     }
     

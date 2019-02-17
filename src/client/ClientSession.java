@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Optional;
+
 import com.sun.media.jfxmedia.events.PlayerTimeListener;
+
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -90,20 +93,10 @@ public class ClientSession extends Thread {
                     ClientApp.removeBusyPlayer(request.getData("busy"));
                 });
                 break;
-            case QUIT_GAME:
-                System.out.println("efknb");
+            case QUIT_GAME :
+            	System.out.println("efknb");
                 Platform.runLater(() -> {
                     ClientApp.connectionError();
-                });
-                break;
-            case REPEATED_LOGIN:
-                Platform.runLater(() -> {
-                    ClientApp.repeated("You are already logged in","signin");
-                });
-                break;
-            case REPEATED_USER:
-                Platform.runLater(() -> {
-                    ClientApp.repeated("You are already registered","signup");
                 });
                 break;
         }
@@ -145,7 +138,7 @@ public class ClientSession extends Thread {
                 ClientApp.multiMain.sendIvitationObservableList.clear();
                 for (int i = 0; i < online_players.size(); i++) {
                     if (!online_players.get(i).equals(source)) {
-                        System.out.println("------->>> " + online_players.get(i));
+                    	System.out.println("------->>> " + online_players.get(i));
                         ClientApp.multiMain.sendIvitationObservableList.add(online_players.get(i));
                     }
                 }
@@ -169,13 +162,13 @@ public class ClientSession extends Thread {
         });
     }
     public void sendReply(String playerName, String replyResult) throws IOException {
-        Request reply = new Request(RequestType.SEND_REPLY);
-        if ("accept".equals(replyResult)) {
-            acceptInvitation(playerName, true, true);
-        }
-        reply.setData("reply", replyResult);
-        reply.setData("destination", playerName);
-        sendingStream.writeObject(reply);
+            Request reply = new Request(RequestType.SEND_REPLY);
+            if ("accept".equals(replyResult)) {
+                acceptInvitation(playerName, true, true);
+            }
+            reply.setData("reply", replyResult);
+            reply.setData("destination", playerName);
+            sendingStream.writeObject(reply);
     }
     public void handleReply(Request request) throws IOException {
         String result = request.getData("reply");
@@ -225,9 +218,10 @@ public class ClientSession extends Thread {
             ClientApp.game.setMsg(msg);
         });
     }
+    
     public void quitGame() throws IOException {
-        request = new Request(RequestType.QUIT_GAME);
-        sendingStream.writeObject(request);
+    	request = new Request(RequestType.QUIT_GAME);
+    	sendingStream.writeObject(request);
     }
     
     public void sendWin() throws IOException {
@@ -240,7 +234,7 @@ public class ClientSession extends Thread {
 //        sendingStream.writeObject(endRequest);
 //    }
     public void startMultiGame() throws IOException {
-        System.out.println("start mmmmmmmm");
+    	System.out.println("start mmmmmmmm");
         request = new Request(RequestType.MULTI_GAME);
         sendingStream.writeObject(request);
     }

@@ -35,8 +35,8 @@ public enum RequestType {
     SERVER_DISCONNECTED,
     BUSY_PLAYER,
     QUIT_GAME,
-    REPEATED_LOGIN,
-    REPEATED_USER,
+    
     WIN,
     LOSE,
+	
 }
