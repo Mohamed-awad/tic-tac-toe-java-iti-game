@@ -13,7 +13,6 @@ import server.assets.Request;
 import server.assets.RequestType;
 
 public class ServerSession extends Thread {
-
     Player onlinePlayer;
     Player playerTwo;
     Socket playerSocket;

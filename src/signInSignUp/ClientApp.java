@@ -132,7 +132,7 @@ public class ClientApp extends Application {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Connection problem");
         alert.setHeaderText(null);
-        alert.setContentText("Player Has disconnected");
+        alert.setContentText("Player Has disconnected, game has been saved");
         Optional<ButtonType> result = alert.showAndWait();
         System.out.println(result.get());
         if (result.get() == ButtonType.OK) {

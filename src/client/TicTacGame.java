@@ -29,7 +29,7 @@ import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
 
 public class TicTacGame {
-
+    
     public Scene scene;
     GridPane grid = new GridPane();
     private Boolean playable;
@@ -37,6 +37,7 @@ public class TicTacGame {
     TextArea showMsgsIn;
     TextField TextInput;
     Tile board[][];
+    String gameArr [][];
     public TicTacGame(Boolean x, Boolean y) {
         your_turn = y;
         playable = x;
@@ -141,11 +142,11 @@ public class TicTacGame {
                                     ClientApp.connectionError();
                                 }
                                 try {
-									checkWin();
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+                                    checkWin();
+                                } catch (IOException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     } else {
@@ -159,10 +160,10 @@ public class TicTacGame {
                                     ClientApp.connectionError();
                                 }
                                 try {
-									checkWin();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
+                                    checkWin();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -210,8 +211,8 @@ public class TicTacGame {
             Optional<ButtonType> result = alert.showAndWait();
             System.out.println(result.get());
             if (result.get() == ButtonType.OK) {
-            	ClientApp.multiMain.start(ClientApp.mainStage);
-            	ClientApp.sessionHandler.startMultiGame();
+                ClientApp.multiMain.start(ClientApp.mainStage);
+                ClientApp.sessionHandler.startMultiGame();
             }
         }
     }
@@ -248,7 +249,7 @@ public class TicTacGame {
         }
         return false;
     }
-    public void disconnectGame() throws IOException{
+    public void disconnectGame() throws IOException {
         Request r = new Request(RequestType.END_GAME);
         ClientApp.sessionHandler.sendingStream.writeObject(r);
     }
