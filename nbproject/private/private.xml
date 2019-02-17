@@ -2,6 +2,19 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/client/TicTacGame.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/signInSignUp/Sign_in.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/client/ClientSession.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/server/assets/Request.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/server/Server.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/server/assets/RequestType.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/server/ServerSession.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/db/DB.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/signInSignUp/Sign_up.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/signInSignUp/ClientApp.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/client/invite/MultiMain.java</file>
+            <file>file:/mnt/LinuxData/JavaTic/JavaFXApplication6/src/server/Server_Mode.java</file>
+        </group>
     </open-files>
 </project-private>

@@ -26,7 +26,7 @@ import single_or_multi.ChooseGUI;
 public class Sign_in {
 
     GridPane grid = new GridPane();
-
+public static Scene scene;
     public void start(Stage primaryStage) {
     	
         //Login btn
@@ -60,8 +60,6 @@ public class Sign_in {
                                 ClientApp.choice.start(ClientApp.mainStage);
 
                             } catch (Exception e) {
-                                System.out.println(e);
-
                                 e.printStackTrace();
                             }
                         } else {
@@ -111,7 +109,7 @@ public class Sign_in {
         back.setMaxWidth(Double.MAX_VALUE);
         btn.setMaxWidth(Double.MAX_VALUE);
 
-        Scene scene = new Scene(grid, 600, 350);
+        scene = new Scene(grid, 600, 350);
         scene.getStylesheets().add(Sign_up.class.getResource("style.css").toExternalForm());
 
         primaryStage.setTitle("Login");

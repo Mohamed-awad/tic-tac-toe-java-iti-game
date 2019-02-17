@@ -2,7 +2,6 @@ package client;
 
 import java.io.IOException;
 import java.util.Optional;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,9 +29,9 @@ import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
 
 public class TicTacGame {
-	
-	public Scene scene;
-	GridPane grid = new GridPane();
+
+    public Scene scene;
+    GridPane grid = new GridPane();
     private Boolean playable;
     private Boolean your_turn;
     TextArea showMsgsIn;
@@ -45,28 +44,22 @@ public class TicTacGame {
         showMsgsIn = new TextArea();
         TextInput = new TextField();
     }
-
     public void start(Stage primaryStage) {
-   
         //chat area
-        
         showMsgsIn.setId("msgchatarea");
         showMsgsIn.setEditable(false);
         showMsgsIn.setPrefHeight(400);  //sets height of the TextArea to 400 pixels 
         showMsgsIn.setPrefWidth(600);    //sets width of the TextArea to 300 pixels
-        grid.add(showMsgsIn, 22,1 , 1, 3);
-        
+        grid.add(showMsgsIn, 22, 1, 1, 3);
         TextInput.setId("msgsendarea");
         TextInput.setPrefHeight(65);  //sets height of the TextArea to 400 pixels 
         TextInput.maxHeight(Double.MAX_VALUE);
-        grid.add(TextInput, 22,1 , 1, 22);
-        
+        grid.add(TextInput, 22, 1, 1, 22);
         Button SendBtn = new Button();
         SendBtn.setText("Send");
         SendBtn.setId("Send");
         SendBtn.setMaxWidth(Double.MAX_VALUE);
-        grid.add(SendBtn, 22,2 , 1, 28);
-        
+        grid.add(SendBtn, 22, 2, 1, 28);
         SendBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -81,75 +74,60 @@ public class TicTacGame {
                 }
             }
         });
-        
         Button logout = new Button();
         logout.setText("Back");
         logout.setId("logout");
-       
         logout.setMaxWidth(Double.MAX_VALUE);
-        grid.add(logout, 22,4 , 1, 16);
-        
+        grid.add(logout, 22, 4, 1, 16);
         logout.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Platform.runLater(()->{
-					try {
-						ClientApp.multiMain.start(ClientApp.mainStage);
-						ClientApp.sessionHandler.quitGame();
-						ClientApp.sessionHandler.startMultiGame();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-               		
-				});
+                Platform.runLater(() -> {
+                    try {
+                        ClientApp.multiMain.start(ClientApp.mainStage);
+                        ClientApp.sessionHandler.quitGame();
+                        ClientApp.sessionHandler.startMultiGame();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         });
-        
-        Label status = new Label("Player Turn"); 
-        
+        Label status = new Label("Player Turn");
         status.setId("status");
         status.setAlignment(Pos.CENTER);
-        grid.add(status, 22,2 , 1, 40);
-            
+        grid.add(status, 22, 2, 1, 40);
         grid.add(new StackPane(new Text("")), 10, 20);
-        
         //End of chat
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-     
-        Scene scene = new Scene(createContent(),1150, 600);
+        Scene scene = new Scene(createContent(), 1150, 600);
         scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
-
         primaryStage.setTitle("Tic Tac - ONline Game");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
         grid.requestFocus();
     }
-	    
+
     private class Tile extends StackPane {
 
         private Text text;
         private Rectangle rect;
         private int row, col;
-
         public Tile(int row, int col) {
             this.row = row;
             this.col = col;
             text = new Text();
             rect = new Rectangle(165, 165);
             rect.setId("rect");
-        
-            rect.setArcHeight(45.0d); 
-            rect.setArcWidth(45.0d);          
-            
-            rect.setFill(Color.rgb(110, 54, 41 , 0.7));
-            rect.setStroke(Color.rgb(131,159,14 ));
+            rect.setArcHeight(45.0d);
+            rect.setArcWidth(45.0d);
+            rect.setFill(Color.rgb(110, 54, 41, 0.7));
+            rect.setStroke(Color.rgb(131, 159, 14));
             text.setFont(Font.font(60));
             getChildren().addAll(rect, text);
-            
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.PRIMARY) {   //make left click on mouse
                     if (playable) {
@@ -201,11 +179,9 @@ public class TicTacGame {
             return text.getText();
         }
     }
-    
     public void setMsg(String msg) {
         showMsgsIn.appendText(msg);
     }
-    
     private Parent createContent() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -224,7 +200,6 @@ public class TicTacGame {
             board[x][y].drawO();
         }
     }
-    
     private void checkWin() throws IOException {    //check state of the game
         if (checkRows() || checkCols() || checkDs()) {
             ClientApp.sessionHandler.sendWin();
@@ -238,7 +213,7 @@ public class TicTacGame {
             	ClientApp.multiMain.start(ClientApp.mainStage);
             	ClientApp.sessionHandler.startMultiGame();
             }
-	    }
+        }
     }
     private boolean checkRows() {
         for (int i = 0; i < 3; i++) {
@@ -273,10 +248,8 @@ public class TicTacGame {
         }
         return false;
     }
-    //End game with another player 
     public void disconnectGame() throws IOException{
         Request r = new Request(RequestType.END_GAME);
         ClientApp.sessionHandler.sendingStream.writeObject(r);
     }
 }
-
