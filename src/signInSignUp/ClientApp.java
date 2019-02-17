@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import single_or_multi.ChooseGUI;
 
-
 public class ClientApp extends Application {
 
     public static Stage mainStage;
@@ -33,7 +32,6 @@ public class ClientApp extends Application {
     public static ChooseGUI choice;
     public static TicTacGame game;
     GridPane grid = new GridPane();
-    
     public ClientApp() throws UnknownHostException {
         try {
             serverSockett = new Socket("localhost", 5000);
@@ -50,17 +48,14 @@ public class ClientApp extends Application {
             }
         }
     }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-    	Button btn_log = new Button();
+        Button btn_log = new Button();
         btn_log.setText("Login");
         btn_log.setId("loginbtn");
-        
         Button btn_signup = new Button();
         btn_signup.setText("Signup");
         btn_signup.setId("loginbtn");
-        
         // add actions on buttons
         btn_log.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -74,19 +69,16 @@ public class ClientApp extends Application {
                 signup();
             }
         });
-        
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-        grid.add(btn_log , 0, 15);
-        grid.add(btn_signup , 0 , 17);
+        grid.add(btn_log, 0, 15);
+        grid.add(btn_signup, 0, 17);
         grid.setAlignment(Pos.CENTER);
         btn_log.setMaxWidth(Double.MAX_VALUE);
         btn_signup.setMaxWidth(Double.MAX_VALUE);
-        
         Scene scene = new Scene(grid, 400, 350);
         scene.getStylesheets().add(Sign_up.class.getResource("style.css").toExternalForm());
-        
         primaryStage.setTitle("Register");
         primaryStage.setResizable(false);
         mainStage = primaryStage;
@@ -94,7 +86,7 @@ public class ClientApp extends Application {
         mainStage.show();
         grid.requestFocus();
     }
-    public void signin() {
+    public static void signin() {
         Sign_in sign_in = new Sign_in();
         try {
             sign_in.start(mainStage);
@@ -102,7 +94,7 @@ public class ClientApp extends Application {
             e.printStackTrace();
         }
     }
-    public void signup() {
+    public static void signup() {
         Sign_up sign_up = new Sign_up();
         try {
             sign_up.start(mainStage);
@@ -158,9 +150,22 @@ public class ClientApp extends Application {
             System.out.println((String) p);
         }
     }
+    public static void repeated(String msg, String mode) { //WHEN server disconnect 
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("error");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        switch (mode) {
+            case "signin":
+                ClientApp.mainStage.setScene(Sign_in.scene);
+                break;
+            case "signup":
+                ClientApp.signup();
+                break;
+        }
+        alert.showAndWait();
+    }
     public static void main(String[] args) {
         launch(args);
     }
 }
-
-

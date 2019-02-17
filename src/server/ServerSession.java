@@ -22,7 +22,7 @@ public class ServerSession extends Thread {
     Request request;
     DB database;
     //In this constructor i create recieveing from player
-    public ServerSession(Socket ps , ObjectOutputStream sendingStream) throws IOException {
+    public ServerSession(Socket ps, ObjectOutputStream sendingStream) throws IOException {
         playerSocket = ps;
         recievingStream = new ObjectInputStream(ps.getInputStream());
         this.sendingStream = sendingStream;
@@ -39,10 +39,12 @@ public class ServerSession extends Thread {
                 //Connection failed 
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    private void requestHandler(Request request) throws IOException {
+    private void requestHandler(Request request) throws IOException, SQLException {
         switch (request.getType()) {
             case SIGNUP:
                 signUpHandler(request);
@@ -80,20 +82,27 @@ public class ServerSession extends Thread {
             case END_GAME: //End the game while playing
                 endGame();
                 break;
-            case QUIT_GAME :
-            	quitGame();
-            	break;
+            case QUIT_GAME:
+                quitGame();
+                break;
         }
     }
     private void quitGame() throws IOException {
-		request = new Request(RequestType.QUIT_GAME);
-		System.out.println("sssssssssssss");
-		playerTwo.outputStream.writeObject(request);
-		
-	}
-	public void signUpHandler(Request signUpRequest) throws IOException {
+        request = new Request(RequestType.QUIT_GAME);
+        System.out.println("sssssssssssss");
+        playerTwo.outputStream.writeObject(request);
+    }
+    public void signUpHandler(Request signUpRequest) throws IOException, SQLException {
         String user_name = signUpRequest.getData("username");
         String user_pass = signUpRequest.getData("pass");
+            ArrayList<db.Player> players = database.getAll();
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i).username.equals(user_name)){
+                    request = new Request(RequestType.REPEATED_USER);
+                    sendingStream.writeObject(request);
+                    return;
+                }
+            }
         try {
             database.insert(user_name, user_pass, "1", 0);
             Request signUpSuccessRequest = new Request(RequestType.SIGN_UP_SUCCESS);
@@ -115,6 +124,17 @@ public class ServerSession extends Thread {
                     break;
                 }
             }
+            Server.onlinePlayers.forEach(player -> {
+                if (player.playerName.equals(user_name)) {
+                    request = new Request(RequestType.REPEATED_LOGIN);
+                    try {
+                        sendingStream.writeObject(request);
+                        return;
+                    } catch (IOException ex) {
+                        Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
             if (flag) {
                 onlinePlayer = new Player(recievingStream, sendingStream, loginRequest.getData("username"), "online");
                 Server.onlinePlayers.add(onlinePlayer);
@@ -205,7 +225,7 @@ public class ServerSession extends Thread {
     private void acceptInvitation(Request q) {
         String playerTwoAccepted = q.getData("destination");
         Server.onlinePlayers.forEach(player -> {
-        	System.out.println(playerTwoAccepted);
+            System.out.println(playerTwoAccepted);
             if (playerTwoAccepted.equals(player.playerName)) {
                 playerTwo = player;
                 try {
@@ -238,20 +258,18 @@ public class ServerSession extends Thread {
         onlinePlayer.setSign('d');
         sendOnlinePlayers();
     }
-    private void closeConnection() throws IOException { 
-    	// if a player close the window
-        if(onlinePlayer != null)
-        {
-        	Server.onlinePlayers.remove(onlinePlayer);
-        	sendBusyPlayer(onlinePlayer.playerName);
-        	sendOnlinePlayers();
+    private void closeConnection() throws IOException {
+        // if a player close the window
+        if (onlinePlayer != null) {
+            Server.onlinePlayers.remove(onlinePlayer);
+            sendBusyPlayer(onlinePlayer.playerName);
+            sendOnlinePlayers();
         }
         playerSocket.close();
     }
-
-    public void disconnectServer() throws IOException{
-    		request = new Request(RequestType.SERVER_DISCONNECTED);
-            sendingStream.writeObject(request);
+    public void disconnectServer() throws IOException {
+        request = new Request(RequestType.SERVER_DISCONNECTED);
+        sendingStream.writeObject(request);
     }
     private void endGame() throws IOException {
         request = new Request(RequestType.CONNECTION_LOST);
