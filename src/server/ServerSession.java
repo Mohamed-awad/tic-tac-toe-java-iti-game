@@ -45,7 +45,12 @@ public class ServerSession extends Thread {
     private void requestHandler(Request request) throws IOException {
         switch (request.getType()) {
             case SIGNUP:
-                signUpHandler(request);
+			try {
+				signUpHandler(request);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
                 break;
             case LOGIN:
                 loginHandler(request);
@@ -102,7 +107,7 @@ public class ServerSession extends Thread {
 		playerTwo.outputStream.writeObject(request);
 		
 	}
-	public void signUpHandler(Request signUpRequest) throws IOException {
+	public void signUpHandler(Request signUpRequest) throws IOException, SQLException {
         String user_name = signUpRequest.getData("username");
         String user_pass = signUpRequest.getData("pass");
 
