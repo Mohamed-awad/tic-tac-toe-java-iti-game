@@ -82,25 +82,23 @@ public class ServerSession extends Thread {
             case END_GAME: //End the game while playing
                 endGame();
                 break;
-            case QUIT_GAME :
-            	quitGame();
-            	break;
+            case QUIT_GAME:
+                quitGame();
+                break;
             case WIN:
-            	hundleWinner();
-            	break;
+                hundleWinner();
+                break;
         }
     }
-    
-    private void hundleWinner() throws IOException{
-    	try {
-			database.update(onlinePlayer.playerName);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-    	request = new Request(RequestType.LOSE);
-		playerTwo.outputStream.writeObject(request);
+    private void hundleWinner() throws IOException {
+        try {
+            database.update(onlinePlayer.playerName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        request = new Request(RequestType.LOSE);
+        playerTwo.outputStream.writeObject(request);
     }
-    
     private void quitGame() throws IOException {
         request = new Request(RequestType.QUIT_GAME);
         playerTwo.outputStream.writeObject(request);
@@ -108,14 +106,14 @@ public class ServerSession extends Thread {
     public void signUpHandler(Request signUpRequest) throws IOException, SQLException {
         String user_name = signUpRequest.getData("username");
         String user_pass = signUpRequest.getData("pass");
-            ArrayList<db.Player> players = database.getAll();
-            for (int i = 0; i < players.size(); i++) {
-                if (players.get(i).username.equals(user_name)){
-                    request = new Request(RequestType.REPEATED_USER);
-                    sendingStream.writeObject(request);
-                    return;
-                }
+        ArrayList<db.Player> players = database.getAll();
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).username.equals(user_name)) {
+                request = new Request(RequestType.REPEATED_USER);
+                sendingStream.writeObject(request);
+                return;
             }
+        }
         try {
             database.insert(user_name, user_pass, "1", 0);
             Request signUpSuccessRequest = new Request(RequestType.SIGN_UP_SUCCESS);
@@ -137,25 +135,29 @@ public class ServerSession extends Thread {
                     break;
                 }
             }
-            Server.onlinePlayers.forEach(player -> {
-                if (player.playerName.equals(user_name)) {
+            boolean repeatedUser = false;
+            for(int i = 0 ; i < Server.onlinePlayers.size();i++){
+                if (Server.onlinePlayers.get(i).playerName.equals(user_name)) {
                     request = new Request(RequestType.REPEATED_LOGIN);
                     try {
+                        repeatedUser = true;
                         sendingStream.writeObject(request);
-                        return;
+                        break;
                     } catch (IOException ex) {
                         Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                }                
+            }
+            if (!repeatedUser) {
+                if (flag) {
+                    onlinePlayer = new Player(recievingStream, sendingStream, loginRequest.getData("username"), "online");
+                    Server.onlinePlayers.add(onlinePlayer);
+                    Request loginSuccessRequest = new Request(RequestType.LOGIN_SUCCESS);
+                    sendingStream.writeObject(loginSuccessRequest);
+                } else {
+                    Request loginSuccessRequest = new Request(RequestType.LOGIN_FAILED);
+                    sendingStream.writeObject(loginSuccessRequest);
                 }
-            });
-            if (flag) {
-                onlinePlayer = new Player(recievingStream, sendingStream, loginRequest.getData("username"), "online");
-                Server.onlinePlayers.add(onlinePlayer);
-                Request loginSuccessRequest = new Request(RequestType.LOGIN_SUCCESS);
-                sendingStream.writeObject(loginSuccessRequest);
-            } else {
-                Request loginSuccessRequest = new Request(RequestType.LOGIN_FAILED);
-                sendingStream.writeObject(loginSuccessRequest);
             }
         } catch (SQLException e) {
             e.printStackTrace();

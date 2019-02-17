@@ -20,13 +20,13 @@ public class ClientSession extends Thread {
     ObjectInputStream recievingStream;
     ObjectOutputStream sendingStream;
     Request request;
-    Boolean response;
+    String response;
     ArrayList<String> online_players;
     ArrayList<String> players_invite_me;
     String source;
     String myName;
     public ClientSession(Socket playerSocket) throws IOException {
-        response = false;
+        response = "";
         this.serverSocket = playerSocket;
         sendingStream = new ObjectOutputStream(playerSocket.getOutputStream());
         recievingStream = new ObjectInputStream(playerSocket.getInputStream());
@@ -48,13 +48,13 @@ public class ClientSession extends Thread {
     public void requestHandler(Request request) throws IOException {
         switch (request.getType()) {
             case SIGN_UP_SUCCESS:
-                response = true;
+                response = "success";
                 break;
             case LOGIN_SUCCESS:
-                response = true;
+                response = "success";
                 break;
             case LOGIN_FAILED:
-                response = false;
+                response = "failed";
                 break;
             case ONLINE_PLAYERS:
                 hundle_online_players(request);
@@ -126,7 +126,7 @@ public class ClientSession extends Thread {
         signUpRequest.setData("pass", Pass);
         sendingStream.writeObject(signUpRequest);
     }
-    public boolean return_response() {
+    public String return_response() {
         return response;
     }
     public void login(String loginName, String Pass) throws IOException {

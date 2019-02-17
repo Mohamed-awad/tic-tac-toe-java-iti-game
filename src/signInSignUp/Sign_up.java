@@ -54,7 +54,7 @@ public class Sign_up {
                     try {
                         ClientApp.sessionHandler.signup(UsText.getText(), PassText.getText());
                         Thread.sleep(1000);
-                        if (ClientApp.sessionHandler.return_response()) {
+                        if ("success".equals(ClientApp.sessionHandler.return_response())) {
                             Sign_in sign_in = new Sign_in();
                             showAlert("Rigistration Successeded");
                             try {
