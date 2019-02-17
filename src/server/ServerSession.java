@@ -83,11 +83,24 @@ public class ServerSession extends Thread {
             case QUIT_GAME :
             	quitGame();
             	break;
+            case WIN:
+            	hundleWinner();
+            	break;
         }
     }
+    
+    private void hundleWinner() throws IOException{
+    	try {
+			database.update(onlinePlayer.playerName);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    	request = new Request(RequestType.LOSE);
+		playerTwo.outputStream.writeObject(request);
+    }
+    
     private void quitGame() throws IOException {
 		request = new Request(RequestType.QUIT_GAME);
-		System.out.println("sssssssssssss");
 		playerTwo.outputStream.writeObject(request);
 		
 	}
