@@ -37,5 +37,6 @@ public enum RequestType {
     QUIT_GAME,
     REPEATED_LOGIN,
     REPEATED_USER,
-	
+    WIN,
+    LOSE,
 }

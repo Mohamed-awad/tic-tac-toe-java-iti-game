@@ -37,16 +37,11 @@ public class DB {
         return player_list;
     }
 
-    public void update(int id, String username, String pass, String status, int score) throws SQLException {
-        pStatement = con.prepareStatement("UPDATE players SET username  = ? ,"
-                + " pass  = ?,status = ?,score = ? WHERE ID = ?;",
+    public void update(String username) throws SQLException {
+        pStatement = con.prepareStatement("UPDATE players SET score = score + 10 WHERE username = ?;",
                 ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
         pStatement.setString(1, username);
-        pStatement.setString(2, pass);
-        pStatement.setString(3, status);
-        pStatement.setInt(4, score);
-        pStatement.setInt(5, id);
 
         affectedRow = pStatement.executeUpdate();
     }

@@ -1,7 +1,7 @@
 package client;
 
 import java.io.IOException;
-import client.invite.MultiMain;
+import java.util.Optional;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,7 +9,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -32,7 +34,6 @@ public class TicTacGame {
     GridPane grid = new GridPane();
     private Boolean playable;
     private Boolean your_turn;
-    char winner;
     TextArea showMsgsIn;
     TextField TextInput;
     Tile board[][];
@@ -139,7 +140,12 @@ public class TicTacGame {
                                 } catch (IOException e) {
                                     ClientApp.connectionError();
                                 }
-                                checkWin(true);
+                                try {
+									checkWin();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
                             }
                         }
                     } else {
@@ -152,7 +158,11 @@ public class TicTacGame {
                                 } catch (IOException e) {
                                     ClientApp.connectionError();
                                 }
-                                checkWin(false);
+                                try {
+									checkWin();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
                             }
                         }
                     }
@@ -190,10 +200,18 @@ public class TicTacGame {
             board[x][y].drawO();
         }
     }
-    private void checkWin(boolean win) {    //check state of the game
+    private void checkWin() throws IOException {    //check state of the game
         if (checkRows() || checkCols() || checkDs()) {
-            if (win) {
-            } else {
+            ClientApp.sessionHandler.sendWin();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Win");
+            alert.setHeaderText(null);
+            alert.setContentText("Congratulaion you win");
+            Optional<ButtonType> result = alert.showAndWait();
+            System.out.println(result.get());
+            if (result.get() == ButtonType.OK) {
+            	ClientApp.multiMain.start(ClientApp.mainStage);
+            	ClientApp.sessionHandler.startMultiGame();
             }
         }
     }
@@ -202,11 +220,6 @@ public class TicTacGame {
             if (board[i][0].get_value().equals(board[i][1].get_value())
                     && board[i][0].get_value().equals(board[i][2].get_value())
                     && !board[i][0].get_value().equals("")) {
-                if (board[i][0].get_value().equals("X")) {
-                    winner = 'x';
-                } else {
-                    winner = 'o';
-                }
                 return true;
             }
         }
@@ -217,11 +230,6 @@ public class TicTacGame {
             if (board[0][i].get_value().equals(board[1][i].get_value())
                     && board[0][i].get_value().equals(board[2][i].get_value())
                     && !board[0][i].get_value().equals("")) {
-                if (board[i][0].get_value().equals("X")) {
-                    winner = 'x';
-                } else {
-                    winner = 'o';
-                }
                 return true;
             }
         }
@@ -231,27 +239,16 @@ public class TicTacGame {
         if (board[0][0].get_value().equals(board[1][1].get_value())
                 && board[0][0].get_value().equals(board[2][2].get_value())
                 && !board[0][0].get_value().equals("")) {
-            if (board[0][0].get_value().equals("x")) {
-                winner = 'x';
-            } else {
-                winner = 'o';
-            }
             return true;
         }
         if (board[0][2].get_value().equals(board[1][1].get_value())
                 && board[0][2].get_value().equals(board[2][0].get_value())
                 && !board[0][2].get_value().equals("")) {
-            if (board[2][0].get_value().equals("x")) {
-                winner = 'x';
-            } else {
-                winner = 'o';
-            }
             return true;
         }
         return false;
     }
-    //End game with another player (motaz)
-    public void disconnectGame() throws IOException {
+    public void disconnectGame() throws IOException{
         Request r = new Request(RequestType.END_GAME);
         ClientApp.sessionHandler.sendingStream.writeObject(r);
     }

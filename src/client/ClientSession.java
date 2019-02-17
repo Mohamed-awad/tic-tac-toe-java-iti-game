@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import com.sun.media.jfxmedia.events.PlayerTimeListener;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import server.assets.Request;
 import server.assets.RequestType;
 import signInSignUp.ClientApp;
@@ -60,10 +62,10 @@ public class ClientSession extends Thread {
             case RECEIVE_INVITATION:
                 handleInvitation(request);
                 break;
-//            case CHAT:
-//             chatHandler(request);
-//                break;
-//            
+            case LOSE:
+             LoseHandler();
+                break;
+            
             case RECEIVE_REPLY:
                 handleReply(request);
                 break;
@@ -106,6 +108,17 @@ public class ClientSession extends Thread {
                 break;
         }
     }
+    public void LoseHandler() {
+    	Platform.runLater(() -> {
+    		try {
+				ClientApp.alert_loser();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        });
+    }
+    
     // send sign up Request
     public void signup(String loginName, String Pass) throws IOException {
         Request signUpRequest = new Request(RequestType.SIGNUP);
@@ -215,6 +228,11 @@ public class ClientSession extends Thread {
     public void quitGame() throws IOException {
         request = new Request(RequestType.QUIT_GAME);
         sendingStream.writeObject(request);
+    }
+    
+    public void sendWin() throws IOException {
+    	request = new Request(RequestType.WIN);
+    	sendingStream.writeObject(request);
     }
 //
 //    public void endGame() throws IOException {

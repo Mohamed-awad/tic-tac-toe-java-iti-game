@@ -115,6 +115,19 @@ public class ClientApp extends Application {
         sessionHandler.endConnection();
         Platform.exit();
     }
+    
+    public static void alert_loser() throws IOException {
+    	Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Lose");
+        alert.setHeaderText(null);
+        alert.setContentText("try another time");
+        Optional<ButtonType> result = alert.showAndWait();
+        System.out.println(result.get());
+        if (result.get() == ButtonType.OK) {
+            ClientApp.multiMain.start(ClientApp.mainStage);
+        	ClientApp.sessionHandler.startMultiGame();
+        }
+    }
     public static void connectionError() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Connection problem");
