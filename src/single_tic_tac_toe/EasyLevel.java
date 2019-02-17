@@ -2,6 +2,7 @@
 package single_tic_tac_toe;
 
 import java.net.UnknownHostException;
+import java.util.Optional;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,7 +10,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
@@ -113,12 +116,22 @@ public class EasyLevel {
                 }
                 if (event.getButton() == MouseButton.PRIMARY) {   //make left click on mouse
                     drawX();
-                    checkWin();
+                    try {
+						checkWin();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                     if (!playable) {
                         return;
                     }
                     computerPlay();
-                    checkWin();
+                    try {
+						checkWin();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                 }
             });
         }
@@ -247,10 +260,35 @@ public class EasyLevel {
         return false;
     }
 
-    private void checkWin() {
+    private void checkWin() throws Exception {
     	//check state of the game
         if (checkRows() || checkCols() || checkDs()) {
             playable = false;
+            if(winner == 'x')
+            {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Win");
+                alert.setHeaderText(null);
+                alert.setContentText("Congratulaion you win");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                	Levels levels = new Levels();
+					levels.start(ClientApp.mainStage);
+                }
+            }
+            else
+            {
+            	Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Lose");
+                alert.setHeaderText(null);
+                alert.setContentText("try another time");
+                Optional<ButtonType> result = alert.showAndWait();
+                System.out.println(result.get());
+                if (result.get() == ButtonType.OK) {
+                	Levels levels = new Levels();
+					levels.start(ClientApp.mainStage);
+                }
+            }
         }
     } 
 }
