@@ -80,7 +80,8 @@ public class Levels {
             @Override
             public void handle(ActionEvent event) {
                 try {
-					ClientApp.choice.start(ClientApp.mainStage);
+                	ChooseGUI ch = new ChooseGUI();
+					ch.start(ClientApp.mainStage);
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
