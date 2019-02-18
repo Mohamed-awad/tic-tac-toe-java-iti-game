@@ -1,0 +1,50 @@
+.root
+{
+    
+    -fx-background-image:  url("backg.jpg");
+    
+}
+
+#loginbtn
+{
+    -fx-background-color: linear-gradient(#db060c, #d5d9da , #ecd3bd);
+    -fx-font-size: 18pt ;
+    -fx-text-fill: black;
+    
+    
+    
+}
+#loginbtn:hover
+{
+    -fx-background-color: linear-gradient(#ecd3bd, #d5d9da , #db060c);
+    -fx-cursor:hand;
+}
+
+#UsText
+{
+   -fx-font-size: 15px;
+   -fx-font-family: "Arial Black";
+   -fx-fill: #e10003;
+   -fx-effect: innershadow( three-pass-box , rgba(255,0,255,0.5) , 6, 0.0 , 2 , 1 );
+    
+    
+}
+#PassText
+{
+    -fx-font-size: 15px;
+   -fx-font-family: "Arial Black";
+   -fx-fill: #e10003;
+   -fx-effect: innershadow( three-pass-box , rgba(255,0,255,0.5) , 6, 0.0 , 2 , 1 );
+    
+}
+
+
+#msgchatarea{
+     -fx-font-family: Consolas;
+     -fx-font-size: 20px;
+  -fx-highlight-fill: #00ff00;
+  -fx-highlight-text-fill: #000000;
+  -fx-text-fill: #00ff00;
+  -fx-background-fills: brown;
+   
+}

@@ -16,9 +16,9 @@ import java.util.Set;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import server.assets.Request;
-import server.assets.RequestType;
-import signInSignUp.ClientApp;
+import assets.Request;
+import assets.RequestType;
+import client.clientGUI.ClientApp;
 
 public class ServerSession extends Thread {
 
