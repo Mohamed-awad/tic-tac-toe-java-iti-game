@@ -62,7 +62,6 @@ public class ClientSession extends Thread {
                 handleOnlinePlayers(request);
                 break;
             case OFFLINE_PLAYERS:
-                System.out.println("offlineplayersReceived");
                 handleOfflinePlayers(request);
                 break;
             case RECEIVE_INVITATION:
@@ -126,6 +125,11 @@ public class ClientSession extends Thread {
             case PLAYER_O:
                 ClientApp.game.your_turn = true;
                 ClientApp.game.playable = false;
+                break;
+            case NOTIFICATION :
+                Platform.runLater(()->{
+                                    ClientApp.showNotification(request.getData("online"));
+                });
                 break;
         }
     }

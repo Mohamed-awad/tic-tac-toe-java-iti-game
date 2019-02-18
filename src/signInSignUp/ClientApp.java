@@ -21,6 +21,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.controlsfx.control.Notifications;
+
 import single_or_multi.ChooseGUI;
 
 public class ClientApp extends Application {
@@ -185,7 +187,16 @@ public class ClientApp extends Application {
         alert.setHeaderText(null);
         alert.setContentText("You will continue the past game");
         alert.showAndWait();
+        
     }
+    
+    public static void showNotification(String player){
+         Notifications.create()
+              .text(player + " is online")
+              .showInformation();
+    }
+       
+    
     public static void main(String[] args) {
         launch(args);
     }

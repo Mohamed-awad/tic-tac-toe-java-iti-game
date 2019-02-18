@@ -325,6 +325,7 @@ public class ServerSession extends Thread {
 
     private void handleMultiRequest() throws IOException, SQLException {
         onlinePlayer.setSign('d');
+        sendNotification();
         sendOnlinePlayers();
         sendOfflinePlayers();
     }
@@ -414,5 +415,16 @@ public class ServerSession extends Thread {
                 Server.onlinePlayers.get(i).outputStream.writeObject(request);
             }
         }
+    }
+    private void sendNotification() throws IOException {
+        request = new Request(RequestType.NOTIFICATION);
+                request.setData("online", onlinePlayer.playerName);
+        for (int i = 0; i < Server.onlinePlayers.size(); i++) {
+            if (Server.onlinePlayers.get(i).getSign() == 'd'&&Server.onlinePlayers.get(i).playerName!=onlinePlayer.playerName) {
+                Server.onlinePlayers.get(i).outputStream.writeObject(request);
+            }
+        }
+        
+        
     }
 }

@@ -36,4 +36,5 @@ public enum RequestType {
     SAVED_GAME,
     PLAYER_X,
     PLAYER_O,
+    NOTIFICATION,
 }
