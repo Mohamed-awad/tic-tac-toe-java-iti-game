@@ -45,7 +45,9 @@ public class Server {
                         System.out.println("not accepted");
                     }
                 }
+                
             });
+                        stServer.setDaemon(true);
             stServer.start();
         } catch (IOException ex) {
 //            Logger.getLogger(ServerFunctoins.class.getName()).log(Level.SEVERE, null, ex);

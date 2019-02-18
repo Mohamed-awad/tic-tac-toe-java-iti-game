@@ -5,13 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Optional;
-
-import com.sun.media.jfxmedia.events.PlayerTimeListener;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import server.Game;
 import server.assets.Request;
 import server.assets.RequestType;
 import signInSignUp.ClientApp;
@@ -28,6 +25,7 @@ public class ClientSession extends Thread {
     ArrayList<String> players_invite_me;
     String source;
     String myName;
+    String emptyArr[] = {"", "", "", "", "", "", "", "", ""};
     public ClientSession(Socket playerSocket) throws IOException {
         response = "";
         this.serverSocket = playerSocket;
@@ -40,11 +38,12 @@ public class ClientSession extends Thread {
     public void run() {
         while (true) {
             try {
-                System.out.println("next2");
                 request = (Request) recievingStream.readObject();
                 requestHandler(request);
             } catch (IOException ex) {
+                System.out.println(ex);
             } catch (ClassNotFoundException ex) {
+                System.out.println(ex);
             }
         }
     }
@@ -60,15 +59,18 @@ public class ClientSession extends Thread {
                 response = "failed";
                 break;
             case ONLINE_PLAYERS:
-                hundle_online_players(request);
+                handleOnlinePlayers(request);
+                break;
+            case OFFLINE_PLAYERS:
+                System.out.println("offlineplayersReceived");
+                handleOfflinePlayers(request);
                 break;
             case RECEIVE_INVITATION:
                 handleInvitation(request);
                 break;
             case LOSE:
-             LoseHandler();
+                LoseHandler();
                 break;
-            
             case RECEIVE_REPLY:
                 handleReply(request);
                 break;
@@ -79,11 +81,13 @@ public class ClientSession extends Thread {
                 handleMsg(request);
                 break;
             case CONNECTION_LOST:
+                saveGameToServer();
                 Platform.runLater(() -> {
                     ClientApp.connectionError();
                 });
                 break;
             case SERVER_DISCONNECTED:
+                saveGameToServer();
                 Platform.runLater(() -> {
                     ClientApp.disconnectServer();
                 });
@@ -93,25 +97,48 @@ public class ClientSession extends Thread {
                     ClientApp.removeBusyPlayer(request.getData("busy"));
                 });
                 break;
-            case QUIT_GAME :
-            	System.out.println("efknb");
+            case QUIT_GAME:
+                saveGameToServer();
                 Platform.runLater(() -> {
                     ClientApp.connectionError();
                 });
                 break;
+            case REPEATED_LOGIN:
+                Platform.runLater(() -> {
+                    ClientApp.repeated("You are already logged in", "signin");
+                });
+                break;
+            case REPEATED_USER:
+                Platform.runLater(() -> {
+                    ClientApp.repeated("You are already registered", "signup");
+                });
+                break;
+            case SAVED_GAME:
+                Platform.runLater(() -> {
+                    ClientApp.showSavedGameExist();
+                    loadGame(request);
+                });
+                break;
+            case PLAYER_X:
+                ClientApp.game.playable = true;
+                ClientApp.game.your_turn = true;
+                break;
+            case PLAYER_O:
+                ClientApp.game.your_turn = true;
+                ClientApp.game.playable = false;
+                break;
         }
     }
     public void LoseHandler() {
-    	Platform.runLater(() -> {
-    		try {
-				ClientApp.alert_loser();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+        Platform.runLater(() -> {
+            try {
+                ClientApp.alert_loser();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         });
     }
-    
     // send sign up Request
     public void signup(String loginName, String Pass) throws IOException {
         Request signUpRequest = new Request(RequestType.SIGNUP);
@@ -129,19 +156,23 @@ public class ClientSession extends Thread {
         loginRequest.setData("pass", Pass);
         sendingStream.writeObject(loginRequest);
     }
-    public void hundle_online_players(Request online_request) {
-        System.out.println("request received");
+    public void handleOnlinePlayers(Request online_request) {
         online_players = online_request.get_online_Data("online_players");
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                ClientApp.multiMain.sendIvitationObservableList.clear();
-                for (int i = 0; i < online_players.size(); i++) {
-                    if (!online_players.get(i).equals(source)) {
-                    	System.out.println("------->>> " + online_players.get(i));
-                        ClientApp.multiMain.sendIvitationObservableList.add(online_players.get(i));
-                    }
+        Platform.runLater(() -> {
+            ClientApp.multiMain.sendIvitationObservableList.clear();
+            for (int i = 0; i < online_players.size(); i++) {
+                if (!online_players.get(i).equals(source)) {
+                    ClientApp.multiMain.sendIvitationObservableList.add(online_players.get(i));
                 }
+            }
+        });
+    }
+        private void handleOfflinePlayers(Request request) {
+        ArrayList<String> players = request.get_online_Data("offlinePlayers");
+        Platform.runLater(() -> {
+            ClientApp.multiMain.OFFlinePeople.clear();
+            for (int i = 0; i < players.size(); i++) {
+                ClientApp.multiMain.OFFlinePeople.add(players.get(i));
             }
         });
     }
@@ -162,13 +193,13 @@ public class ClientSession extends Thread {
         });
     }
     public void sendReply(String playerName, String replyResult) throws IOException {
-            Request reply = new Request(RequestType.SEND_REPLY);
-            if ("accept".equals(replyResult)) {
-                acceptInvitation(playerName, true, true);
-            }
-            reply.setData("reply", replyResult);
-            reply.setData("destination", playerName);
-            sendingStream.writeObject(reply);
+        Request reply = new Request(RequestType.SEND_REPLY);
+        if ("accept".equals(replyResult)) {
+            acceptInvitation(playerName, true, true);
+        }
+        reply.setData("reply", replyResult);
+        reply.setData("destination", playerName);
+        sendingStream.writeObject(reply);
     }
     public void handleReply(Request request) throws IOException {
         String result = request.getData("reply");
@@ -178,13 +209,20 @@ public class ClientSession extends Thread {
         }
     }
     public void acceptInvitation(String player, Boolean x, Boolean y) throws IOException {
+        ClientApp.gameArr = emptyArr.clone();
         Request r = new Request(RequestType.ACCEPT_INVITATION);
         r.setData("destination", player);
         Platform.runLater(() -> {
             ClientApp.game = new TicTacGame(x, y);
-            ClientApp.game.start(ClientApp.mainStage);
+            try {
+                ClientApp.game.start(ClientApp.mainStage);
+                sendingStream.writeObject(r);
+                request = new Request(RequestType.CHECK_GAME);
+                ClientApp.sessionHandler.sendingStream.writeObject(request);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientSession.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
-        sendingStream.writeObject(r);
     }
     public void endConnection() throws IOException {
         request = new Request(RequestType.END_SESSION);
@@ -196,12 +234,14 @@ public class ClientSession extends Thread {
         move.setData("x", Integer.toString(x));
         move.setData("y", Integer.toString(y));
         move.setData("current_player", playable);
+        saveIntoArr(x, y, playable);
         sendingStream.writeObject(move);
     }
     private void handleMove(Request request) {
         int x = Integer.valueOf(request.getData("x"));
         int y = Integer.valueOf(request.getData("y"));
         String playable = request.getData("current_player");
+        saveIntoArr(x, y, playable);
         Platform.runLater(() -> {
             ClientApp.game.setMove(x, y, playable);
         });
@@ -218,15 +258,13 @@ public class ClientSession extends Thread {
             ClientApp.game.setMsg(msg);
         });
     }
-    
     public void quitGame() throws IOException {
-    	request = new Request(RequestType.QUIT_GAME);
-    	sendingStream.writeObject(request);
+        request = new Request(RequestType.QUIT_GAME);
+        sendingStream.writeObject(request);
     }
-    
     public void sendWin() throws IOException {
-    	request = new Request(RequestType.WIN);
-    	sendingStream.writeObject(request);
+        request = new Request(RequestType.WIN);
+        sendingStream.writeObject(request);
     }
 //
 //    public void endGame() throws IOException {
@@ -234,8 +272,117 @@ public class ClientSession extends Thread {
 //        sendingStream.writeObject(endRequest);
 //    }
     public void startMultiGame() throws IOException {
-    	System.out.println("start mmmmmmmm");
         request = new Request(RequestType.MULTI_GAME);
         sendingStream.writeObject(request);
     }
+    private void saveIntoArr(int xx, int yy, String player) {
+        int pos = 0;
+        switch (xx) {
+            case 0:
+                switch (yy) {
+                    case 0:
+                        pos = 0;
+                        break;
+                    case 1:
+                        pos = 1;
+                        break;
+                    case 2:
+                        pos = 2;
+                        break;
+                }
+                break;
+            case 1:
+                switch (yy) {
+                    case 0:
+                        pos = 3;
+                        break;
+                    case 1:
+                        pos = 4;
+                        break;
+                    case 2:
+                        pos = 5;
+                        break;
+                }
+                break;
+            case 2:
+                switch (yy) {
+                    case 0:
+                        pos = 6;
+                        break;
+                    case 1:
+                        pos = 7;
+                        break;
+                    case 2:
+                        pos = 8;
+                        break;
+                }
+                break;
+        }
+        ClientApp.gameArr[pos] = player;
+    }
+    public void saveGameToServer() throws IOException {
+        request = new Request(RequestType.SAVE_GAME);
+        request.setGameData("game", ClientApp.gameArr);
+        sendingStream.writeObject(request);
+    }
+    private void loadGame(Request request) {
+        Game loadedGame = request.getSavedGame("game");
+        String returnedArr[] = {"", "", "", "", "", "", "", "", ""};
+        returnedArr[0] = loadedGame.cell11;
+        returnedArr[1] = loadedGame.cell12;
+        returnedArr[2] = loadedGame.cell13;
+        returnedArr[3] = loadedGame.cell21;
+        returnedArr[4] = loadedGame.cell22;
+        returnedArr[5] = loadedGame.cell23;
+        returnedArr[6] = loadedGame.cell31;
+        returnedArr[7] = loadedGame.cell32;
+        returnedArr[8] = loadedGame.cell33;
+        ClientApp.gameArr = returnedArr.clone();
+        if (!"".equals(loadedGame.cell11)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(0, 0, loadedGame.cell11);
+            });
+        }
+        if (!"".equals(loadedGame.cell12)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(0, 1, loadedGame.cell12);
+            });
+        }
+        if (!"".equals(loadedGame.cell13)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(0, 2, loadedGame.cell13);
+            });
+        }
+        if (!"".equals(loadedGame.cell21)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(1, 0, loadedGame.cell21);
+            });
+        }
+        if (!"".equals(loadedGame.cell22)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(1, 1, loadedGame.cell22);
+            });
+        }
+        if (!"".equals(loadedGame.cell23)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(1, 2, loadedGame.cell23);
+            });
+        }
+        if (!"".equals(loadedGame.cell31)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(2, 0, loadedGame.cell31);
+            });
+        }
+        if (!"".equals(loadedGame.cell32)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(2, 1, loadedGame.cell32);
+            });
+        }
+        if (!"".equals(loadedGame.cell33)) {
+            Platform.runLater(() -> {
+                ClientApp.game.setMove(2, 2, loadedGame.cell33);
+            });
+        }
+    }
+
 }
