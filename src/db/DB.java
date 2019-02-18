@@ -17,7 +17,7 @@ public class DB {
         try {
             DriverManager.registerDriver(new Driver());
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/TicTacToe",
-                    "motaz", "1234");
+                    "root", "01111451253");
             player_list = new ArrayList<>();
         } catch (SQLException ex) {
             System.out.println(ex);

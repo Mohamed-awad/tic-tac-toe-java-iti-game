@@ -68,6 +68,9 @@ public class ServerSession extends Thread {
                     e.printStackTrace();
                 }
                 break;
+            case TIE:
+            	hundle_tie();
+            	break;
             case LOGIN:
                 loginHandler(request);
                 break;
@@ -157,6 +160,11 @@ public class ServerSession extends Thread {
                 }
                 break;
         }
+    }
+    private void hundle_tie() throws IOException
+    {
+    	Request tie = new Request(RequestType.TIE);
+        playerTwo.outputStream.writeObject(tie);
     }
     private void checkPlayer(String player) {
         if ("X".equals(player)) {

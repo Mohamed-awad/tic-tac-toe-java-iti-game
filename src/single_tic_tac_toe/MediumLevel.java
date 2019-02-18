@@ -2,6 +2,7 @@
 package single_tic_tac_toe;
 
 import java.net.UnknownHostException;
+import java.util.Optional;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,7 +10,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
@@ -117,13 +120,17 @@ public class MediumLevel {
                     if (!playable) {
                         return;
                     }
-                    computerPlay();
+                    try {
+						computerPlay();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
                     checkWin();
                 }
             });
         }
 
-        public void computerPlay() {
+        public void computerPlay() throws Exception {
 
         	//Choose winning move if available
             for (int column = 0; column <= 2; column++) {
@@ -179,6 +186,15 @@ public class MediumLevel {
                         return;
                     }
                 }
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Tie");
+            alert.setHeaderText(null);
+            alert.setContentText("good game no winner try again");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+            	Levels levels = new Levels();
+				levels.start(ClientApp.mainStage);
             }
         }
 

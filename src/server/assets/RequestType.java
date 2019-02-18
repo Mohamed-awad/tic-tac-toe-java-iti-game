@@ -11,7 +11,6 @@ public enum RequestType {
     RECEIVE_INVITATION,
     ACCEPT_INVITATION,
     REJECT_INVITATION,
-    CHAT,
     SEND_REPLY,
     RECEIVE_REPLY,
     SEND_MSG,
@@ -36,4 +35,6 @@ public enum RequestType {
     SAVED_GAME,
     PLAYER_X,
     PLAYER_O,
+    CHAT,
+    TIE,
 }

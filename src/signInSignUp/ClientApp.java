@@ -165,6 +165,17 @@ public class ClientApp extends Application {
             System.out.println((String) p);
         }
     }
+    public static void tie()
+    {
+    	Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Tie");
+        alert.setHeaderText(null);
+        alert.setContentText("good game no winner try again");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+        	ClientApp.multiMain.start(ClientApp.mainStage);
+        }
+    }
     public static void repeated(String msg, String mode) { //WHEN server disconnect 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("error");

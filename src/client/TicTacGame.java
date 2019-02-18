@@ -23,6 +23,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import levels.Levels;
 import server.assets.Request;
 import server.assets.RequestType;
 import signInSignUp.ClientApp;
@@ -136,9 +137,10 @@ public class TicTacGame {
                                     ClientApp.connectionError();
                                 }
                                 try {
-                                    checkWin();
+                                    if(!checkWin()) {
+                                    	checkTie();
+                                    }
                                 } catch (IOException e) {
-                                    // TODO Auto-generated catch block
                                     e.printStackTrace();
                                 }
                             }
@@ -154,7 +156,9 @@ public class TicTacGame {
                                     ClientApp.connectionError();
                                 }
                                 try {
-                                    checkWin();
+                                	if(!checkWin()) {
+                                    	checkTie();
+                                    }
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -195,7 +199,26 @@ public class TicTacGame {
             board[x][y].drawO();
         }
     }
-    private void checkWin() throws IOException {    //check state of the game
+    private void checkTie() throws IOException {
+    	for (int i = 0; i < 3; i++) {
+    		for (int j = 0; j < 3; j++) {
+				if(board[i][j].get_value().equals(""))
+					return;
+			}
+		}
+    	ClientApp.sessionHandler.sendTie();
+    	Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Tie");
+        alert.setHeaderText(null);
+        alert.setContentText("good game no winner try again");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            ClientApp.multiMain.start(ClientApp.mainStage);
+            ClientApp.sessionHandler.startMultiGame();
+        }
+    }
+    
+    private boolean checkWin() throws IOException {    //check state of the game
         if (checkRows() || checkCols() || checkDs()) {
             ClientApp.sessionHandler.sendWin();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -207,7 +230,9 @@ public class TicTacGame {
                 ClientApp.sessionHandler.startMultiGame();
                 ClientApp.multiMain.start(ClientApp.mainStage);
             }
+            return true;
         }
+		return false;
     }
     private boolean checkRows() {
         for (int i = 0; i < 3; i++) {

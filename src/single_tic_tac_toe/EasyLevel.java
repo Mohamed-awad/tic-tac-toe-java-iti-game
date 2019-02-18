@@ -119,24 +119,27 @@ public class EasyLevel {
                     try {
 						checkWin();
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
                     if (!playable) {
                         return;
                     }
-                    computerPlay();
+                    try {
+						computerPlay();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
                     try {
 						checkWin();
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
                 }
             });
         }
 
-        public void computerPlay() {
+        public void computerPlay() throws Exception {
         	
             //Choose center if available
             if (back_end_board[1][1] == '-') {
@@ -180,6 +183,17 @@ public class EasyLevel {
                     }
                 }
             }
+            
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Tie");
+            alert.setHeaderText(null);
+            alert.setContentText("good game no winner try again");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+            	Levels levels = new Levels();
+				levels.start(ClientApp.mainStage);
+            }
+        
         }
 
         private void drawX() {

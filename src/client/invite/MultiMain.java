@@ -30,7 +30,7 @@ import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
 import single_or_multi.ChooseGUI;
 
-public class MultiMain{
+public class MultiMain {
 
     String current;
     String currentInvitation;
@@ -58,6 +58,7 @@ public class MultiMain{
 
         OFF_People.setId("Label_Invite");
         
+//        grid.setGridLinesVisible(true);
         
         Button inviteBtn = new Button("Invite");
         inviteBtn.setId("InviteBtn");
@@ -150,8 +151,8 @@ public class MultiMain{
         grid.add(OFF_People, 0, 3);
         grid.add(AcceptInvitationListView, 4, 1);
         grid.add(acceptBtn, 4, 2);
-
-        grid.add(backBtn, 4, 3);
+        backBtn.setMaxWidth(Double.MAX_VALUE);
+        grid.add(backBtn, 4, 8 );
         grid.add(Off_players, 0, 4 , 1 , 5);
         
         //set alignment
