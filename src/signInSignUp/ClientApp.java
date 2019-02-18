@@ -32,6 +32,7 @@ public class ClientApp extends Application {
     public static ChooseGUI choice;
     public static TicTacGame game;
     GridPane grid = new GridPane();
+    public static String gameArr[];
     public ClientApp() throws UnknownHostException {
         try {
             serverSockett = new Socket("localhost", 5000);
@@ -115,9 +116,8 @@ public class ClientApp extends Application {
         sessionHandler.endConnection();
         Platform.exit();
     }
-    
     public static void alert_loser() throws IOException {
-    	Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Lose");
         alert.setHeaderText(null);
         alert.setContentText("try another time");
@@ -125,7 +125,7 @@ public class ClientApp extends Application {
         System.out.println(result.get());
         if (result.get() == ButtonType.OK) {
             ClientApp.multiMain.start(ClientApp.mainStage);
-        	ClientApp.sessionHandler.startMultiGame();
+            ClientApp.sessionHandler.startMultiGame();
         }
     }
     public static void connectionError() {
@@ -171,11 +171,19 @@ public class ClientApp extends Application {
         switch (mode) {
             case "signin":
                 ClientApp.mainStage.setScene(Sign_in.scene);
+                ClientApp.signin();
                 break;
             case "signup":
                 ClientApp.signup();
                 break;
         }
+        alert.showAndWait();
+    }
+    public static void showSavedGameExist() { //WHEN server disconnect 
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("There is a saved Game");
+        alert.setHeaderText(null);
+        alert.setContentText("You will continue the past game");
         alert.showAndWait();
     }
     public static void main(String[] args) {

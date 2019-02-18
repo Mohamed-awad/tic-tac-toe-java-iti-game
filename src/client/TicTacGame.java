@@ -29,15 +29,14 @@ import signInSignUp.ClientApp;
 import signInSignUp.Sign_up;
 
 public class TicTacGame {
-    
-    public Scene scene;
+
     GridPane grid = new GridPane();
-    private Boolean playable;
-    private Boolean your_turn;
+    public Boolean playable;
+    public Boolean your_turn;
     TextArea showMsgsIn;
     TextField TextInput;
     Tile board[][];
-    String gameArr [][];
+    String gameArr[][];
     public TicTacGame(Boolean x, Boolean y) {
         your_turn = y;
         playable = x;
@@ -45,7 +44,7 @@ public class TicTacGame {
         showMsgsIn = new TextArea();
         TextInput = new TextField();
     }
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
         //chat area
         showMsgsIn.setId("msgchatarea");
         showMsgsIn.setEditable(false);
@@ -61,18 +60,15 @@ public class TicTacGame {
         SendBtn.setId("Send");
         SendBtn.setMaxWidth(Double.MAX_VALUE);
         grid.add(SendBtn, 22, 2, 1, 28);
-        SendBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (!TextInput.getText().equals("")) {
-                    showMsgsIn.appendText(TextInput.getText() + "\n");
-                    try {
-                        ClientApp.sessionHandler.sendMsg(TextInput.getText() + "\n");
-                    } catch (IOException e) {
-                        ClientApp.connectionError();
-                    }
-                    TextInput.setText("");
+        SendBtn.setOnAction((ActionEvent event) -> {
+            if (!TextInput.getText().equals("")) {
+                showMsgsIn.appendText(TextInput.getText() + "\n");
+                try {
+                    ClientApp.sessionHandler.sendMsg(TextInput.getText() + "\n");
+                } catch (IOException e) {
+                    ClientApp.connectionError();
                 }
+                TextInput.setText("");
             }
         });
         Button logout = new Button();
@@ -80,19 +76,17 @@ public class TicTacGame {
         logout.setId("logout");
         logout.setMaxWidth(Double.MAX_VALUE);
         grid.add(logout, 22, 4, 1, 16);
-        logout.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Platform.runLater(() -> {
-                    try {
-                        ClientApp.multiMain.start(ClientApp.mainStage);
-                        ClientApp.sessionHandler.quitGame();
-                        ClientApp.sessionHandler.startMultiGame();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
+        logout.setOnAction((ActionEvent event) -> {
+            Platform.runLater(() -> {
+                try {
+                    ClientApp.multiMain.start(ClientApp.mainStage);
+                    ClientApp.sessionHandler.quitGame();
+                    ClientApp.sessionHandler.startMultiGame();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            });
         });
         Label status = new Label("Player Turn");
         status.setId("status");
@@ -209,10 +203,9 @@ public class TicTacGame {
             alert.setHeaderText(null);
             alert.setContentText("Congratulaion you win");
             Optional<ButtonType> result = alert.showAndWait();
-            System.out.println(result.get());
             if (result.get() == ButtonType.OK) {
-                ClientApp.multiMain.start(ClientApp.mainStage);
                 ClientApp.sessionHandler.startMultiGame();
+                ClientApp.multiMain.start(ClientApp.mainStage);
             }
         }
     }
@@ -249,6 +242,7 @@ public class TicTacGame {
         }
         return false;
     }
+    //End game with another player 
     public void disconnectGame() throws IOException {
         Request r = new Request(RequestType.END_GAME);
         ClientApp.sessionHandler.sendingStream.writeObject(r);

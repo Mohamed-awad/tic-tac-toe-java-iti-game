@@ -45,7 +45,9 @@ public class Server {
                         System.out.println("not accepted");
                     }
                 }
+                
             });
+                        stServer.setDaemon(true);
             stServer.start();
         } catch (IOException ex) {
 //            Logger.getLogger(ServerFunctoins.class.getName()).log(Level.SEVERE, null, ex);
@@ -53,10 +55,7 @@ public class Server {
     }
     public void stopServer() {
         try {
-            try{
-            stServer.stop();}
-            catch(Exception e){
-            }
+            stServer.stop();
             for (int i = 0; i < clients.size(); i++) {
                 System.out.println("let's close the server");
                 Request request = new Request(RequestType.SERVER_DISCONNECTED);
@@ -71,6 +70,7 @@ public class Server {
             }
             System.out.println("Server stopped");
         } catch (IOException ex) {
+            System.out.println(ex);
             System.out.println("error when closing server");
         }
     }
