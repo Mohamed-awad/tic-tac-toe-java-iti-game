@@ -10,8 +10,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import server.assets.Request;
-import server.assets.RequestType;
+import assets.Request;
+import assets.RequestType;
 
 public class Server {
 

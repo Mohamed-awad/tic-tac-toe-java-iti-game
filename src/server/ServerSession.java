@@ -16,9 +16,9 @@ import java.util.Set;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import server.assets.Request;
-import server.assets.RequestType;
-import signInSignUp.ClientApp;
+import assets.Request;
+import assets.RequestType;
+import client.clientGUI.ClientApp;
 
 public class ServerSession extends Thread {
 
@@ -333,6 +333,7 @@ public class ServerSession extends Thread {
 
     private void handleMultiRequest() throws IOException, SQLException {
         onlinePlayer.setSign('d');
+        sendNotification();
         sendOnlinePlayers();
         sendOfflinePlayers();
     }
@@ -422,5 +423,16 @@ public class ServerSession extends Thread {
                 Server.onlinePlayers.get(i).outputStream.writeObject(request);
             }
         }
+    }
+    private void sendNotification() throws IOException {
+        request = new Request(RequestType.NOTIFICATION);
+                request.setData("online", onlinePlayer.playerName);
+        for (int i = 0; i < Server.onlinePlayers.size(); i++) {
+            if (Server.onlinePlayers.get(i).getSign() == 'd'&&Server.onlinePlayers.get(i).playerName!=onlinePlayer.playerName) {
+                Server.onlinePlayers.get(i).outputStream.writeObject(request);
+            }
+        }
+        
+        
     }
 }
