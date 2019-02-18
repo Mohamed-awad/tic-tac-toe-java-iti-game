@@ -27,7 +27,6 @@ in this project we build tictactoe game in java
 * download the project 
 * extract the progect
 * open netbeans and import project
-* install required packages on virtualenv `pip3 install -r requirements.txt`
 * open mysql in terminal `mysql`
 * execute commands in TicTacToe.sql
 * run server by running server_mode.java
