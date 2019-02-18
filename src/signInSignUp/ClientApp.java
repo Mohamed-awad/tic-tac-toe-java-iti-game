@@ -75,8 +75,10 @@ public class ClientApp extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(0, 10, 0, 10));
-        grid.add(btn_log, 0, 15);
-        grid.add(btn_signup, 0, 17);
+
+        grid.add(btn_log , 0, 3);
+        grid.add(btn_signup , 0 , 5);
+
         grid.setAlignment(Pos.CENTER);
         btn_log.setMaxWidth(Double.MAX_VALUE);
         btn_signup.setMaxWidth(Double.MAX_VALUE);

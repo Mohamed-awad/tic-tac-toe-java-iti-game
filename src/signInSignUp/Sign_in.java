@@ -1,5 +1,7 @@
 package signInSignUp;
 
+import static javafx.application.Application.launch;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -7,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import client.ClientSession;
 import db.*;
+import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,7 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import single_or_multi.ChooseGUI;
 
-public class Sign_in {
+public class Sign_in extends Application{
 
     GridPane grid = new GridPane();
 
@@ -113,4 +116,10 @@ public class Sign_in {
         alert.setContentText("Invalid Username Or Password");
         alert.show();
     }
+    
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+    
 }

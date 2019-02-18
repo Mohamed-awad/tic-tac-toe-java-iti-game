@@ -242,7 +242,7 @@ public class TicTacToe {
             if (back_end_board[0][i] == back_end_board[1][i]
                     && back_end_board[0][i] == back_end_board[2][i]
                     && back_end_board[0][i] != '-') {
-                if (back_end_board[i][0] == 'x') {
+                if (back_end_board[0][i] == 'x') {
                     winner = 'x';
                 } else {
                     winner = 'o';

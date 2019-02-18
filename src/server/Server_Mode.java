@@ -31,12 +31,16 @@ public class Server_Mode extends Application {
     public void start(Stage primaryStage) throws Exception {
         myServer = new Server();
         TableView<UserAccount> table = new TableView<UserAccount>();
+
+        table.setId("TableView");
+        
         // Create column UserName (Data type of String).
         TableColumn<UserAccount, String> userNameCol //
-                = new TableColumn<UserAccount, String>("User Name");
+                = new TableColumn<UserAccount, String>("UserName");
         // Active Column
         TableColumn<UserAccount, Boolean> activeCol//
-                = new TableColumn<UserAccount, Boolean>("Active");
+                = new TableColumn<UserAccount, Boolean>("Score");
+   
         // Defines how to fill data for each cell.
         // Get value from property of UserAccount. .
         userNameCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
@@ -50,20 +54,26 @@ public class Server_Mode extends Application {
         table.getColumns().addAll(userNameCol, activeCol);
         GridPane root = new GridPane();
         root.setPadding(new Insets(5));
-        root.add(table, 0, 0, 3, 20);
+
+        //table.setMaxWidth(Double.MAX_VALUE);
+
+        root.add(table , 0 , 1 );
+        
         Button Btn_Start = new Button();
         Btn_Start.setText("Start Server");
-        Btn_Start.setId("loginbtn");
+        Btn_Start.setId("InviteBtn");
+        
         Button Btn_Stop = new Button();
         Btn_Stop.setText("Stop Server");
-        Btn_Stop.setId("loginbtn");
+        Btn_Stop.setId("InviteBtn");
+
         // add actions on buttons
         Btn_Start.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 myServer.startServer();
                 root.getChildren().remove(Btn_Start);
-                root.add(Btn_Stop, 0, 7, 3, 40);
+                root.add(Btn_Stop, 0, 4);
             }
         });
         Btn_Stop.setOnAction(new EventHandler<ActionEvent>() {
@@ -71,17 +81,22 @@ public class Server_Mode extends Application {
             public void handle(ActionEvent event) {
                 myServer.stopServer();
                 root.getChildren().remove(Btn_Stop);
-                root.add(Btn_Start, 0, 7, 3, 40);
+                root.add(Btn_Start, 0, 4);
             }
         });
         root.setHgap(10);
         root.setVgap(10);
         root.setPadding(new Insets(0, 10, 0, 10));
-        root.add(Btn_Start, 0, 7, 3, 40);
+
+        root.add(Btn_Start , 0, 4 );
+        
+        
         root.setAlignment(Pos.CENTER);
         Btn_Start.setMaxWidth(Double.MAX_VALUE);
         Btn_Stop.setMaxWidth(Double.MAX_VALUE);
-        Scene scene = new Scene(root, 400, 500);
+        
+        Scene scene = new Scene(root,500, 650);   
+
         scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
         primaryStage.setTitle("Server Status");
         primaryStage.setScene(scene);
