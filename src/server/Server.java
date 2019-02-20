@@ -30,7 +30,6 @@ public class Server {
     public void startServer() {
         try {
             gameServer = new ServerSocket(5000);
-            System.out.println("Server is started");
             stServer = new Thread(() -> {
                 while (true) {
                     try {
@@ -39,10 +38,7 @@ public class Server {
                         sendingStream = new ObjectOutputStream(playerSocket.getOutputStream());
                         clients.add(sendingStream);
                         connection = new ServerSession(playerSocket, sendingStream);
-                        System.out.println("connectionDone");
                     } catch (IOException ex) {
-                        ex.printStackTrace();
-                        System.out.println("not accepted");
                     }
                 }
                 
@@ -57,10 +53,8 @@ public class Server {
         try {
             stServer.stop();
             for (int i = 0; i < clients.size(); i++) {
-                System.out.println("let's close the server");
                 Request request = new Request(RequestType.SERVER_DISCONNECTED);
                 clients.get(i).writeObject(request);
-                System.out.println("server closed");
             }
             clients.clear();
             gameServer.close();
@@ -69,9 +63,7 @@ public class Server {
             {
             	connection.disconnectServer();
             }
-            System.out.println("Server stopped");
         } catch (IOException ex) {
-            System.out.println("error when closing server");
         }
     }
 }

@@ -56,6 +56,10 @@ public class MultiMain {
         peopleinvited.setId("Label_Invite");
         Label OFF_People = new Label("Offline People");
         OFF_People.setId("Label_Invite");
+
+        
+//        grid.setGridLinesVisible(true);
+        
         Button inviteBtn = new Button("Invite");
         inviteBtn.setId("InviteBtn");
         Button acceptBtn = new Button("Accept");
@@ -137,8 +141,10 @@ public class MultiMain {
         grid.add(OFF_People, 0, 3);
         grid.add(AcceptInvitationListView, 4, 1);
         grid.add(acceptBtn, 4, 2);
-        grid.add(backBtn, 4, 3);
-        grid.add(Off_players, 0, 4, 1, 5);
+        backBtn.setMaxWidth(Double.MAX_VALUE);
+        grid.add(backBtn, 4, 8 );
+        grid.add(Off_players, 0, 4 , 1 , 5);
+        
         //set alignment
         grid.setHalignment(invitePeople, HPos.CENTER);
         grid.setHalignment(peopleinvited, HPos.CENTER);

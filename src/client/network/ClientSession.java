@@ -128,6 +128,9 @@ public class ClientSession extends Thread {
                 ClientApp.game.your_turn = true;
                 ClientApp.game.playable = false;
                 break;
+            case TIE:
+            	hundle_tie();
+            	break;
             case NOTIFICATION :
                 Platform.runLater(()->{
                                     ClientApp.showNotification(request.getData("online"));
@@ -135,6 +138,17 @@ public class ClientSession extends Thread {
                 break;
         }
     }
+    
+    private void hundle_tie() {
+    	Platform.runLater(() -> {
+    		ClientApp.tie();
+    	});
+	}
+	public void sendTie() throws IOException  {
+    	Request tie = new Request(RequestType.TIE);
+        sendingStream.writeObject(tie);
+    }
+    
     public void LoseHandler() {
         Platform.runLater(() -> {
             try {
