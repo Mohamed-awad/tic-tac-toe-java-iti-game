@@ -23,23 +23,23 @@ import client.clientGUI.Sign_up;
 import db.DB;
 import db.PlayerDB;
 import db.UserAccount;
-
+//gui of the server 
 public class Server_Mode extends Application {
 
     Server myServer;
     @Override
     public void start(Stage primaryStage) throws Exception {
         myServer = new Server();
-        TableView<UserAccount> table = new TableView<UserAccount>();
+        TableView<UserAccount> table = new TableView<>();
 
         table.setId("TableView");
         
         // Create column UserName (Data type of String).
         TableColumn<UserAccount, String> userNameCol //
-                = new TableColumn<UserAccount, String>("UserName");
+                = new TableColumn<>("UserName");
         // Active Column
         TableColumn<UserAccount, Boolean> activeCol//
-                = new TableColumn<UserAccount, Boolean>("Score");
+                = new TableColumn<>("Score");
    
         // Defines how to fill data for each cell.
         // Get value from property of UserAccount. .

@@ -7,10 +7,7 @@ package server;
 
 import java.io.Serializable;
 
-/**
- *
- * @author Motaz
- */
+//game that will be send across the server
 public class Game implements Serializable{
 
     public String player1;

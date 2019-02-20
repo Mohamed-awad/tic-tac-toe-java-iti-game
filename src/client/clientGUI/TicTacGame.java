@@ -28,6 +28,7 @@ import assets.RequestType;
 import client.clientGUI.ClientApp;
 import client.clientGUI.Sign_up;
 
+//this is for logic of the multiplayer game
 public class TicTacGame {
 
     GridPane grid = new GridPane();
@@ -84,7 +85,6 @@ public class TicTacGame {
                     ClientApp.sessionHandler.startMultiGame();
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
             });
         });
@@ -139,7 +139,6 @@ public class TicTacGame {
                                     checkWin();
                                 } catch (IOException e) {
                                     // TODO Auto-generated catch block
-                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -156,7 +155,6 @@ public class TicTacGame {
                                 try {
                                     checkWin();
                                 } catch (IOException e) {
-                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -242,7 +240,7 @@ public class TicTacGame {
         }
         return false;
     }
-    //End game with another player 
+    //End game with another player by closing the window
     public void disconnectGame() throws IOException {
         Request r = new Request(RequestType.END_GAME);
         ClientApp.sessionHandler.sendingStream.writeObject(r);

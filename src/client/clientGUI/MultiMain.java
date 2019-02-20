@@ -30,15 +30,16 @@ import client.clientGUI.ClientApp;
 import client.clientGUI.Sign_up;
 import client.clientGUI.ChooseGUI;
 
-public class MultiMain{
+//this is used for the gui of multiplayer choosing
+public class MultiMain {
 
     String current;
     String currentInvitation;
-    ArrayList<String> online_players;
-    ArrayList<String> players_invite_me;
+    ArrayList<String> online_players; // to store online players
+    ArrayList<String> players_invite_me; // to store player who invites me 
+    ArrayList<String> Off_players;
     public ObservableList<String> sendIvitationObservableList;
     public ObservableList<String> OFFlinePeople;
-    ArrayList<String> Off_players;
     ListView<String> invitePeopleListView;
     public ObservableList<String> AcceptInvitationObserveList;
     public void start(Stage primaryStage) {
@@ -51,28 +52,20 @@ public class MultiMain{
         //create the nodes
         Label invitePeople = new Label("People To Invite");
         invitePeople.setId("Label_Invite");
-        
         Label peopleinvited = new Label("People Who Invited You");
         peopleinvited.setId("Label_Invite");
         Label OFF_People = new Label("Offline People");
-
         OFF_People.setId("Label_Invite");
-        
-        
         Button inviteBtn = new Button("Invite");
         inviteBtn.setId("InviteBtn");
-        
         Button acceptBtn = new Button("Accept");
         acceptBtn.setId("AcceptBtn");
-      
         Button backBtn = new Button("Back");
         backBtn.setId("AcceptBtn");
-
         // send invitation list and accept invitation list
         sendIvitationObservableList = FXCollections.observableArrayList();
         invitePeopleListView = new ListView<String>(sendIvitationObservableList);
         invitePeopleListView.setId("listinvited");
-        
         invitePeopleListView.setPrefSize(300, 300);
         invitePeopleListView.setOrientation(Orientation.VERTICAL);
         MultipleSelectionModel<String> sendInvitationModule = invitePeopleListView.getSelectionModel();
@@ -84,7 +77,6 @@ public class MultiMain{
         });
         // Offline People
         OFFlinePeople = FXCollections.observableArrayList();
-        
         ListView<String> Off_players = new ListView<String>(OFFlinePeople);
         Off_players.setId("listinvited");
         Off_players.setPrefSize(300, 300);
@@ -96,7 +88,6 @@ public class MultiMain{
                 currentInvitation = new_val;
             }
         });
-
         AcceptInvitationObserveList = FXCollections.observableArrayList();
         ListView<String> AcceptInvitationListView = new ListView<String>(AcceptInvitationObserveList);
         AcceptInvitationListView.setId("listinvited");
@@ -109,7 +100,7 @@ public class MultiMain{
                 currentInvitation = new_val;
             }
         });
-        // add action
+        // add actions to handle invitation and replies 
         inviteBtn.setOnAction((event) -> {
             try {
                 if (current != null) {
@@ -127,20 +118,16 @@ public class MultiMain{
                     ClientApp.sessionHandler.sendReply(currentInvitation, "accept");
                     currentInvitation = null;
                 } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         });
         backBtn.setOnAction((event) -> {
             try {
-
-            	ChooseGUI ca = new ChooseGUI();
-				ca.start(ClientApp.mainStage);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+                ChooseGUI ca = new ChooseGUI();
+                ca.start(ClientApp.mainStage);
+            } catch (IOException e) {
+            } catch (Exception e) {
+            }
         });
         //added nodes of grid
         grid.add(invitePeople, 0, 0);
@@ -150,16 +137,13 @@ public class MultiMain{
         grid.add(OFF_People, 0, 3);
         grid.add(AcceptInvitationListView, 4, 1);
         grid.add(acceptBtn, 4, 2);
-
         grid.add(backBtn, 4, 3);
-        grid.add(Off_players, 0, 4 , 1 , 5);
-        
+        grid.add(Off_players, 0, 4, 1, 5);
         //set alignment
         grid.setHalignment(invitePeople, HPos.CENTER);
         grid.setHalignment(peopleinvited, HPos.CENTER);
         grid.setHalignment(inviteBtn, HPos.CENTER);
         grid.setHalignment(acceptBtn, HPos.CENTER);
-
         //setting the stage & scene
         Scene scene = new Scene(grid, 600, 600);
         scene.getStylesheets().add(Sign_up.class.getResource("GameStyle.css").toExternalForm());
@@ -175,5 +159,4 @@ public class MultiMain{
         alert.setContentText(mess);
         alert.show();
     }
-    
 }

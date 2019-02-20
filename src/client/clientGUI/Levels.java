@@ -16,7 +16,7 @@ import client.clientGUI.ChooseGUI;
 import client.singleGame.EasyLevel;
 import client.singleGame.MediumLevel;
 import client.singleGame.TicTacToe;
-
+//This is for gui of levels
 public class Levels {
 
     GridPane grid = new GridPane();

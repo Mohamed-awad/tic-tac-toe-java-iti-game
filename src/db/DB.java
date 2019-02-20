@@ -24,6 +24,7 @@ public class DB {
             ex.printStackTrace();
         }
     }
+    //return all players
     public ArrayList<PlayerDB> getAll() throws SQLException {
         Statement stmt = con.createStatement();
         String queryString = "select * from players";
@@ -34,6 +35,7 @@ public class DB {
         }
         return player_list;
     }
+    //update the player score
     public void update(String username) throws SQLException {
         pStatement = con.prepareStatement("UPDATE players SET score = score + 10 WHERE username = ?;",
                 ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -41,6 +43,7 @@ public class DB {
         pStatement.setString(1, username);
         affectedRow = pStatement.executeUpdate();
     }
+    //insert new player
     public void insert(String username, String pass, String status, int score) throws SQLException {
         pStatement = con.prepareStatement("INSERT INTO players (username, pass, status, score)"
                 + " VALUES (? , ? ,? , ?);",
@@ -52,6 +55,7 @@ public class DB {
         pStatement.setInt(4, score);
         pStatement.executeUpdate();
     }
+    //insert saved game
     public void insertNewGame(String player1, String player2, String cell11, String cell12, String cell13,
             String cell21, String cell22, String cell23, String cell31, String cell32, String cell33) throws SQLException {
         pStatement = con.prepareStatement("INSERT into games (player1,player2,cell11,"
@@ -72,6 +76,7 @@ public class DB {
         pStatement.setString(11, cell33);
         pStatement.executeUpdate();
     }
+    //get all games to search for a saved game
     public ArrayList<Game> getGames() throws SQLException {
         ArrayList<Game> games = new ArrayList<>();
         Statement stmt = con.createStatement();

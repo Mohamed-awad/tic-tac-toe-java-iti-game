@@ -64,13 +64,13 @@ public class Server {
             }
             clients.clear();
             gameServer.close();
+            //send disconnect from server msg
             if(!Server.onlinePlayers.isEmpty())
             {
             	connection.disconnectServer();
             }
             System.out.println("Server stopped");
         } catch (IOException ex) {
-            System.out.println(ex);
             System.out.println("error when closing server");
         }
     }

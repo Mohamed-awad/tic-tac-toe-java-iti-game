@@ -26,7 +26,7 @@ public class ClientSession extends Thread {
     ArrayList<String> players_invite_me;
     String source;
     String myName;
-    String emptyArr[] = {"", "", "", "", "", "", "", "", ""};
+    String emptyArr[] = {"", "", "", "", "", "", "", "", ""}; // this is used to empty saved game arr by cloning this
     public ClientSession(Socket playerSocket) throws IOException {
         response = "";
         this.serverSocket = playerSocket;
@@ -50,7 +50,8 @@ public class ClientSession extends Thread {
     }
     public void requestHandler(Request request) throws IOException {
         switch (request.getType()) {
-            case SIGN_UP_SUCCESS:
+            //requests that can be sent from the server
+            case SIGN_UP_SUCCESS: 
                 response = "success";
                 break;
             case LOGIN_SUCCESS:
@@ -80,24 +81,24 @@ public class ClientSession extends Thread {
             case RECEIVE_MSG:
                 handleMsg(request);
                 break;
-            case CONNECTION_LOST:
+            case CONNECTION_LOST://connection lost with the player
                 saveGameToServer();
                 Platform.runLater(() -> {
                     ClientApp.connectionError();
                 });
                 break;
-            case SERVER_DISCONNECTED:
+            case SERVER_DISCONNECTED://disconnect from server 
                 saveGameToServer();
                 Platform.runLater(() -> {
                     ClientApp.disconnectServer();
                 });
                 break;
-            case BUSY_PLAYER: //remove the player from the lists
+            case BUSY_PLAYER: //remove the busy player from the lists
                 Platform.runLater(() -> {
                     ClientApp.removeBusyPlayer(request.getData("busy"));
                 });
                 break;
-            case QUIT_GAME:
+            case QUIT_GAME: // when a player press back button 
                 saveGameToServer();
                 Platform.runLater(() -> {
                     ClientApp.connectionError();
@@ -113,13 +114,13 @@ public class ClientSession extends Thread {
                     ClientApp.repeated("You are already registered", "signup");
                 });
                 break;
-            case SAVED_GAME:
+            case SAVED_GAME: //sending saved game from the server
                 Platform.runLater(() -> {
                     ClientApp.showSavedGameExist();
                     loadGame(request);
                 });
                 break;
-            case PLAYER_X:
+            case PLAYER_X: // choosing playerX for saved Game
                 ClientApp.game.playable = true;
                 ClientApp.game.your_turn = true;
                 break;
@@ -140,7 +141,6 @@ public class ClientSession extends Thread {
                 ClientApp.alert_loser();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         });
     }
@@ -161,6 +161,7 @@ public class ClientSession extends Thread {
         loginRequest.setData("pass", Pass);
         sendingStream.writeObject(loginRequest);
     }
+    //get online players and show them on gui
     public void handleOnlinePlayers(Request online_request) {
         online_players = online_request.get_online_Data("online_players");
         Platform.runLater(() -> {
@@ -181,9 +182,7 @@ public class ClientSession extends Thread {
             }
         });
     }
-    public ArrayList<String> return_online_players() {
-        return online_players;
-    }
+        
     public void sendInvitation(String name) throws IOException {
         Request inviteRequest = new Request(RequestType.SEND_INVITATION);
         inviteRequest.setData("source", source);
@@ -213,6 +212,7 @@ public class ClientSession extends Thread {
             acceptInvitation(player, false, true);
         }
     }
+    //this function send the request to the server to connect the two players
     public void acceptInvitation(String player, Boolean x, Boolean y) throws IOException {
         ClientApp.gameArr = emptyArr.clone();
         Request r = new Request(RequestType.ACCEPT_INVITATION);
@@ -229,6 +229,7 @@ public class ClientSession extends Thread {
             }
         });
     }
+    
     public void endConnection() throws IOException {
         request = new Request(RequestType.END_SESSION);
         sendingStream.writeObject(request);
@@ -271,15 +272,13 @@ public class ClientSession extends Thread {
         request = new Request(RequestType.WIN);
         sendingStream.writeObject(request);
     }
-//
-//    public void endGame() throws IOException {
-//        Request endRequest = new Request(RequestType.END_GAME);
-//        sendingStream.writeObject(endRequest);
-//    }
+    //this is used to send the server request to start the multi game to check if there is saved game
+    //or to remove it from the online player list
     public void startMultiGame() throws IOException {
         request = new Request(RequestType.MULTI_GAME);
         sendingStream.writeObject(request);
     }
+    //convert the 2 dimention arr to 1 dimention arr that will be saved
     private void saveIntoArr(int xx, int yy, String player) {
         int pos = 0;
         switch (xx) {
@@ -330,6 +329,7 @@ public class ClientSession extends Thread {
         request.setGameData("game", ClientApp.gameArr);
         sendingStream.writeObject(request);
     }
+    //convert 1d array to be showed on the scene
     private void loadGame(Request request) {
         Game loadedGame = request.getSavedGame("game");
         String returnedArr[] = {"", "", "", "", "", "", "", "", ""};

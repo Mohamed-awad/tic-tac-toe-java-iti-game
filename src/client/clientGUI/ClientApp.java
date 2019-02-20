@@ -23,7 +23,7 @@ import org.controlsfx.control.Notifications;
 
 
 public class ClientApp extends Application {
-
+    //We creates static variables to be accessed from anywhere in the app 
     public static Stage mainStage;
     public static Socket serverSockett;
     public static ClientSession sessionHandler;
@@ -31,7 +31,7 @@ public class ClientApp extends Application {
     public static ChooseGUI choice;
     public static TicTacGame game;
     GridPane grid = new GridPane();
-    public static String gameArr[];
+    public static String gameArr[]; // this is used for saving games 
     public ClientApp() throws UnknownHostException {
         try {
             serverSockett = new Socket("localhost", 5000);
@@ -88,12 +88,12 @@ public class ClientApp extends Application {
         mainStage.show();
         grid.requestFocus();
     }
+   
     public static void signin() {
         Sign_in sign_in = new Sign_in();
         try {
             sign_in.start(mainStage);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
     public static void signup() {
@@ -101,7 +101,6 @@ public class ClientApp extends Application {
         try {
             sign_up.start(mainStage);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
     public static void changeStageSize(Window stage, int width, int height) {
@@ -117,6 +116,8 @@ public class ClientApp extends Application {
         sessionHandler.endConnection();
         Platform.exit();
     }
+    
+    //Alert functions to show msgs to users
     public static void alert_loser() throws IOException {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Lose");
@@ -195,7 +196,7 @@ public class ClientApp extends Application {
               .showInformation();
     }
        
-    
+    //starting the stage
     public static void main(String[] args) {
         launch(args);
     }

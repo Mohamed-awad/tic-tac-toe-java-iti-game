@@ -50,11 +50,8 @@ public class ServerSession extends Thread {
             } catch (IOException ex) {
                 //Connection failed 
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SQLException ex) {
-                Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
-                Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -72,7 +69,7 @@ public class ServerSession extends Thread {
                 loginHandler(request);
                 break;
             case ONLINE_PLAYERS:
-                get_online_players();
+                getOnlinePlayers();
                 break;
             case SEND_INVITATION:
                 invite(request);
@@ -110,7 +107,7 @@ public class ServerSession extends Thread {
             case SAVE_GAME:
                 saveGame(request.getGameData("game"));
                 break;
-            case CHECK_GAME:
+            case CHECK_GAME: // check for saved game
                 loadedGame = checkSavedGame();
                 countX = 0;
                 countO = 0;
@@ -125,6 +122,7 @@ public class ServerSession extends Thread {
                     checkPlayer(loadedGame.cell31);
                     checkPlayer(loadedGame.cell32);
                     checkPlayer(loadedGame.cell33);
+                    //this is used to set players then the game is retrieved 
                     if (countX == countO) {
                         if (loadedGame.player1.equals(onlinePlayer.playerName)) {
                             request = new Request(RequestType.PLAYER_X);
@@ -150,6 +148,7 @@ public class ServerSession extends Thread {
                             playerTwo.outputStream.writeObject(request);
                         }
                     }
+                    //return the saved game
                     request = new Request(RequestType.SAVED_GAME);
                     request.setSaveddGame("game", loadedGame);
                     sendingStream.writeObject(request);
@@ -158,6 +157,7 @@ public class ServerSession extends Thread {
                 break;
         }
     }
+    //check the current player after loading the game
     private void checkPlayer(String player) {
         if ("X".equals(player)) {
             countX++;
@@ -174,6 +174,7 @@ public class ServerSession extends Thread {
         request = new Request(RequestType.LOSE);
         playerTwo.outputStream.writeObject(request);
     }
+    //this is used for sign up 
     public void signUpHandler(Request signUpRequest) throws IOException, SQLException {
         String user_name = signUpRequest.getData("username");
         String user_pass = signUpRequest.getData("pass");
@@ -193,6 +194,7 @@ public class ServerSession extends Thread {
             e.printStackTrace();
         }
     }
+    //login and send the online players to the users
     public void loginHandler(Request loginRequest) throws IOException {
         String user_name = loginRequest.getData("username");
         String user_pass = loginRequest.getData("pass");
@@ -215,7 +217,6 @@ public class ServerSession extends Thread {
                         sendingStream.writeObject(request);
                         break;
                     } catch (IOException ex) {
-                        Logger.getLogger(ServerSession.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
@@ -231,10 +232,9 @@ public class ServerSession extends Thread {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
-    public void get_online_players() throws IOException {
+    public void getOnlinePlayers() throws IOException {
         Request onlineplayers_request = new Request(RequestType.ONLINE_PLAYERS);
         ArrayList<String> arr = new ArrayList<>();
         for (int i = 0; i < Server.onlinePlayers.size(); i++) {
@@ -257,6 +257,7 @@ public class ServerSession extends Thread {
             }
         });
     }
+    //handle reply
     public void reply(Request replyData) {
         String destinationName = replyData.getData("destination");
         String replyResult = replyData.getData("reply");
@@ -274,6 +275,7 @@ public class ServerSession extends Thread {
         }
         );
     }
+    //sending game moves
     private void gameHandler(Request request) {
         String x = request.getData("x");
         String y = request.getData("y");
@@ -308,6 +310,7 @@ public class ServerSession extends Thread {
             }
         }
     }
+    //connect the two players together 
     private void acceptInvitation(Request q) {
         String playerTwoAccepted = q.getData("destination");
         Server.onlinePlayers.forEach(player -> {
@@ -322,7 +325,7 @@ public class ServerSession extends Thread {
             }
         });
     }
-
+    //to send the online and offline players to all people in multiplayer game mode
     private void handleMultiRequest() throws IOException, SQLException {
         onlinePlayer.setSign('d');
         sendNotification();
@@ -368,6 +371,7 @@ public class ServerSession extends Thread {
                 gameArr[3], gameArr[4], gameArr[5],
                 gameArr[6], gameArr[7], gameArr[8]);
     }
+    //check for saved game when two players are connected
     private Game checkSavedGame() throws SQLException {
         ArrayList<Game> games = database.getGames();
         for (int i = 0; i < games.size(); i++) {
@@ -378,6 +382,7 @@ public class ServerSession extends Thread {
         }
         return null;
     }
+    //get offline players by getting the differences 
     public ArrayList<String> getOffline() throws SQLException {
         ArrayList<String> allPlayers = new ArrayList<>();
         ArrayList<String> onlinePlayers = new ArrayList<>();

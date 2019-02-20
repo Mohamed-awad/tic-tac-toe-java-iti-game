@@ -51,7 +51,7 @@ public class Sign_in extends Application{
                 if (!(UsText.getText().equals("") || PassText.getText().equals(""))) {
                     try {
                         ClientApp.sessionHandler.login(UsText.getText(), PassText.getText());
-                        Thread.sleep(1000);
+                        Thread.sleep(1000); // it's used to wait for a reply from server
                         if ("success".equals(ClientApp.sessionHandler.return_response())) {
                             ClientApp.choice = new ChooseGUI();
                             try {

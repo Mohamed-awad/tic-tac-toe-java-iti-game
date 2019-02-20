@@ -10,7 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import client.clientGUI.ClientApp;
 import client.clientGUI.Sign_up;
-
+//This class is for choosing between single and multiPlayer
 public class ChooseGUI {
 
     GridPane grid = new GridPane();
@@ -33,7 +33,6 @@ public class ChooseGUI {
                 try {
                     tt.start(ClientApp.mainStage);
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         });
@@ -46,7 +45,6 @@ public class ChooseGUI {
                     ClientApp.sessionHandler.startMultiGame();
                     ClientApp.multiMain.start(ClientApp.mainStage);
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         });
