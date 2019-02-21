@@ -71,12 +71,12 @@ public class TicTacGame {
                 TextInput.setText("");
             }
         });
-        Button logout = new Button();
-        logout.setText("Back");
-        logout.setId("logout");
-        logout.setMaxWidth(Double.MAX_VALUE);
-        grid.add(logout, 22, 4, 1, 16);
-        logout.setOnAction((ActionEvent event) -> {
+        Button back = new Button();
+        back.setText("Back");
+        back.setId("logout");
+        back.setMaxWidth(Double.MAX_VALUE);
+        grid.add(back, 22, 4, 1, 16);
+        back.setOnAction((ActionEvent event) -> {
             Platform.runLater(() -> {
                 try {
                     ClientApp.multiMain.start(ClientApp.mainStage);
