@@ -29,6 +29,7 @@ in this project we build tictactoe game in java
 * open netbeans and import project
 * open mysql in terminal `mysql`
 * execute commands in TicTacToe.sql
+* create user for database with name "motaz" and password "1234"
 * run server by running server_mode.java
 * run server by running Clientapp.java
 
